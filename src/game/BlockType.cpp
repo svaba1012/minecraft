@@ -38,7 +38,7 @@ Texture* makeTexture(string texturePath){
         // Remove found substring from string
         texturePath.erase(pos, subStr.length());
     }
-    string fullTexturePath ="./assets/minecraft_assets/minecraft/textures/" + texturePath + ".png";
+    string fullTexturePath ="./assets/extern_minecraft_assets/assets/minecraft/textures/" + texturePath + ".png";
       char* fullTexturePathChar = new char[fullTexturePath.length() + 1];
       strcpy(fullTexturePathChar, fullTexturePath.c_str()); 
     return new Texture(fullTexturePathChar);
@@ -83,7 +83,7 @@ void BlockType::loadData(){
 
         std::cout << "Varijanta je " << curVariant << " a niz je " << variants[i] << std::endl; 
 
-        std::ifstream f("./assets/minecraft_assets/minecraft/models/block/" + curVariant + ".json");
+        std::ifstream f("./assets/extern_minecraft_assets/assets/minecraft/models/block/" + curVariant + ".json");
         json blockModel = json::parse(f);
 
         json blockTexturesJSON = blockModel.at("textures");

@@ -26,26 +26,27 @@ void Texture::loadTexture(){
 
     cout<< bitDepth << endl;
 
+    // ! resize image but make them blury
     // assume is divisible by 4
-    if(width < MIN_TEXTURE_WIDTH || height < MIN_TEXTURE_HEIGHT){
-        int widthScale = MIN_TEXTURE_WIDTH / width;
-        int heightScale = MIN_TEXTURE_HEIGHT / height;
+    // if(width < MIN_TEXTURE_WIDTH || height < MIN_TEXTURE_HEIGHT){
+    //     int widthScale = MIN_TEXTURE_WIDTH / width;
+    //     int heightScale = MIN_TEXTURE_HEIGHT / height;
 
-        int scale = widthScale;
-        if(scale < heightScale){
-            scale = heightScale;
-        }
+    //     int scale = widthScale;
+    //     if(scale < heightScale){
+    //         scale = heightScale;
+    //     }
 
-        cout << scale << endl;
+    //     cout << scale << endl;
 
-        unsigned char* resizedImage = new unsigned char[width * height * scale * scale * bitDepth];
+    //     unsigned char* resizedImage = new unsigned char[width * height * scale * scale * bitDepth];
 
-        stbir_resize_uint8(textureData, width, height, 0, resizedImage, width * scale, height * scale, 0, bitDepth);
+    //     stbir_resize_uint8(textureData, width, height, 0, resizedImage, width * scale, height * scale, 0, bitDepth);
 
-        textureData = resizedImage;
-        width *= scale;
-        height *= scale;
-    }
+    //     textureData = resizedImage;
+    //     width *= scale;
+    //     height *= scale;
+    // }
     
 
     
@@ -60,8 +61,8 @@ void Texture::loadTexture(){
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_MIPMAP);
-    glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     float borderColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);

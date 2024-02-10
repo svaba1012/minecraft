@@ -30,7 +30,7 @@ void Scene::init(bool* keys, bool* mouseButtons){
     for(int i = -15; i < 15; i++){
         for(int j = -15; j < 15; j++){
             Block* block = new Block(this, glm::vec3((GLfloat)i, 0.0, (GLfloat)j), glm::vec3(0.0, 0.0, 0.0) ,glm::vec3(1.0, 1.0, 1.0));
-            block->setType("Clay", "Clay");
+            block->setType("Dirt", "Dirt");
             block->generateMeshes();
             gameObjects.push_back(block);
         }   
