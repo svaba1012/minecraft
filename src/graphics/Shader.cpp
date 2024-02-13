@@ -9,27 +9,13 @@ Shader::Shader(/* args */){
 }
 
 Shader::~Shader(){
-}
-
-void Shader::createTriangle(GLfloat* vertices, GLuint verticesLen){
-
-    GLfloat vertices1[] = {
-        -1.0, -1.0, 0.0,
-        1.0, -1.0, 0.0,
-        0.0, 1.0, 0.0 };
-
-    glGenVertexArrays(1, &this->VAO);
-    glBindVertexArray(this->VAO);
-
-    glGenBuffers(1, &this->VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-    glBufferData(GL_ARRAY_BUFFER, verticesLen * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    for(int i = 0; i < this->shaderPrograms.size(); i++){
+        glDetachShader(this->program, this->shaderPrograms[i]);
+    }
+    for(int i = 0; i < this->shaderPrograms.size(); i++){
+        glDeleteShader(this->shaderPrograms[i]);
+    }
+    glDeleteProgram(this->program);
 }
 
 
@@ -57,6 +43,8 @@ bool Shader::addShader(char* filename, GLenum shaderType){
 
     GLuint shaderProgram = glCreateShader(shaderType);
 
+    shaderPrograms.push_back(shaderProgram);
+
     const GLchar* theCode[1];
     theCode[0] = shaderCode;
 
@@ -69,8 +57,7 @@ bool Shader::addShader(char* filename, GLenum shaderType){
     glShaderSource(shaderProgram, 1, theCode, codeLength);
     glCompileShader(shaderProgram);
     glGetShaderiv(shaderProgram, GL_COMPILE_STATUS, &result);
-    if (!result)
-    {
+    if (!result){
         glGetShaderInfoLog(shaderProgram, sizeof(elog), NULL, elog);
         printf("Error compiling the %s shader: %s\n", shaderType == GL_VERTEX_SHADER ? "vertex" : "fragment", elog);
         return false;
@@ -105,6 +92,16 @@ void Shader::compileShaders(){
     }
 
 }
+
+
+GLuint Shader::getUniformLocation(char* uniformName){
+    return glGetUniformLocation(this->program, uniformName);
+}
+
+GLuint Shader::getAttribLocation(char* attrName){
+    return glGetAttribLocation(this->program, attrName);
+}
+
 
 GLuint Shader::getModelLocation(){
     return glGetUniformLocation(this->program, "model");
