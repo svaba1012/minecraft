@@ -19,7 +19,7 @@ find_package(GLEW REQUIRED)
 
 project(minecraft)
 
-add_executable(minecraft ./src/main.cpp ./src/Window.cpp ./src/graphics/Shader.cpp ./src/Camera.cpp ./src/graphics/Mesh.cpp ./src/graphics/Texture.cpp ./src/Light.cpp ./src/game/GameObject.cpp  ./src/game/Scene.cpp  ./src/game/Block.cpp ./src/game/Character.cpp ./src/game/BlockType.cpp ./includes/stb_image_resize.h ./includes/stb_image.h ./src/gameLib/ui/GameUI2D.cpp ./includes/gameLib/extern/nuklear.h)
+add_executable(minecraft ./src/main.cpp ./src/Window.cpp ./src/graphics/Shader.cpp ./src/Camera.cpp ./src/graphics/Mesh.cpp ./src/graphics/Texture.cpp ./src/Light.cpp ./src/game/GameObject.cpp  ./src/game/Scene.cpp  ./src/game/Block.cpp ./src/game/Character.cpp ./src/game/BlockType.cpp ./includes/stb_image_resize.h ./includes/stb_image.h ./src/gameLib/ui/GameUI2D.cpp ./includes/gameLib/extern/nuklear.h ./src/minecraft/Item.cpp ./src/minecraft/ItemType.cpp)
 
 include_directories( ${GLEW_INCLUDE_DIRS} ./includes  )
 

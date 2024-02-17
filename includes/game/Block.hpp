@@ -5,13 +5,13 @@
 class Block: public GameObject{
 private:
     /* data */
-    static vector<Mesh*> blockMeshes;
     static vector<Mesh*> blockMeshesWithBorders;
 
     void generateMeshWithBorders(GLfloat borderWidth, vector<Mesh*> *listMesh);
 
      
 public:
+    static vector<Mesh*> blockMeshes;
     BlockType* type;
     string typeName;
     string variantName;

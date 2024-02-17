@@ -52,8 +52,8 @@ public:
     GLfloat movementDirection;
     GLfloat movementSpeed;
     GLfloat rollSpeed;
-    GLfloat yawSpeed = 0.3;
-    GLfloat pitchSpeed = 0.3;
+    GLfloat yawSpeed = 0.0;
+    GLfloat pitchSpeed = 0.0;
     GLfloat scaleSpeed;
     GLfloat circleInscribedR;
     GLfloat circleOutscribedR;

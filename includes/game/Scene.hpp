@@ -14,6 +14,7 @@
 #include "Light.hpp"
 #include "game/Block.hpp"
 #include "game/GameObject.hpp"
+#include "minecraft/Item.hpp"
 
 using namespace std;
 

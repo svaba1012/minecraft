@@ -88,6 +88,8 @@ GameObject* GameObject::getObjectAimingAt(){
 
 
 void GameObject::update(){
+
+
     
     
     this->front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
@@ -108,6 +110,7 @@ void GameObject::update(){
 }
 
 void GameObject::render(GLuint uniformModel, GLfloat deltaTime){
+    // this->yaw += this->yawSpeed * deltaTime;
     update();
     glm::mat4 model = glm::mat4(1);
     // model = glm::translate(model, glm::vec3(-0.5, -0.5, -0.5));

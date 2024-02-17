@@ -27,6 +27,9 @@ void Scene::init(bool* keys, bool* mouseButtons){
     
     // Simple world
     
+    
+
+
     for(int i = -15; i < 15; i++){
         for(int j = -15; j < 15; j++){
             Block* block = new Block(this, glm::vec3((GLfloat)i, 0.0, (GLfloat)j), glm::vec3(0.0, 0.0, 0.0) ,glm::vec3(1.0, 1.0, 1.0));
@@ -35,6 +38,14 @@ void Scene::init(bool* keys, bool* mouseButtons){
             gameObjects.push_back(block);
         }   
     }
+
+    for(int i = 0; i < 10; i++){
+        Item* item = new Item(this, glm::vec3((GLfloat)i, 1.01, (GLfloat)i), glm::vec3(0.0, 0.0, 0.0) ,glm::vec3(1.0, 1.0, 1.0));
+        item->setTypeById("coal_ore");
+        item->generateMeshes();
+        gameObjects.push_back(item);
+    }
+
     printf("Napravljen pod\n");
 
     for(int i = 1; i < 7; i++){

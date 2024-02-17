@@ -15,5 +15,5 @@ uniform sampler2D theTexture;
 void main(){
     vec4 ambientLight = vec4(directionalLight.color, 1.0) * directionalLight.ambientIntensity;
     
-    color = texture(theTexture, texCoords) * ambientLight;
+    color = texture(theTexture, texCoords);// * ambientLight;
 }

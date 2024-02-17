@@ -1,6 +1,7 @@
 #include "Window.hpp"
 
 #include "game/BlockType.hpp"
+#include "minecraft/ItemType.hpp"
 
 
 
@@ -12,6 +13,8 @@ Window::Window(){
     this->mouseFirstMoved = true;
     
     BlockType::init();
+    ItemType::init();
+
     BlockType::getTypeByName("Ancient Debris");
     
 }
@@ -166,10 +169,12 @@ void Window::run(){
 
         glfwPollEvents();
         glClearColor(0.0, 0.0, 0.0, 1.0);
+        // glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);  
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);  
   
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
         // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         this->curScene->render();
