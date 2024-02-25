@@ -101,6 +101,9 @@ void Character::keyControl(bool* keys, GLfloat deltaTime){
         isMoving = true;
         movementDirection -= this->right;
     }
+    if(keys[GLFW_KEY_E]){
+        
+    }
     if(isMoving){
         this->movementSpeed = 4.0;
         this->velocity = this->movementSpeed * glm::normalize(movementDirection);

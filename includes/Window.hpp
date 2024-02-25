@@ -14,9 +14,7 @@
 #include "./Light.hpp"
 #include "game/Block.hpp"
 #include "game/Scene.hpp"
-
-
-
+#include "gameLib/ui/GameUI2D.hpp"
 
 using namespace std;
 
@@ -40,6 +38,9 @@ private:
     bool mouseButtons[3];
     static void handleKeys(GLFWwindow* window, int key, int code, int action, int mode);
     static void handleMouseButtons(GLFWwindow* window, int button, int action, int mods);
+
+    // ! remove to Character
+    bool isInventoryOpen = false;
     
 public:
     Window(/* args */);

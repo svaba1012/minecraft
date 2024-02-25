@@ -27,6 +27,8 @@
 
 #include "gameLib/extern/use_nuklear.h"
 
+
+
 // #ifndef STB_IMAGE_IMPLEMENTATION
 // #define STB_IMAGE_IMPLEMENTATION
 // #include "stb_image.h"
@@ -55,6 +57,8 @@
  *
  * ===============================================================*/
 
+
+typedef void (*ui2dFunc) (struct nk_context *ctx);
 
 struct nk_glfw_vertex {
     float position[2];
@@ -98,6 +102,8 @@ class GameUI2D{
 
     public:
     // ! *dev can be removed as arg
+
+        ui2dFunc uiRender;
         static void device_init(GLFWwindow *win);
         void device_upload_atlas(const void *image, int width, int height);
         static void device_shutdown();
