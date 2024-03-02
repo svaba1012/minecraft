@@ -43,6 +43,7 @@ private:
     bool isInventoryOpen = false;
     
 public:
+    static GLFWwindow* window;
     Window(/* args */);
 
     bool init();

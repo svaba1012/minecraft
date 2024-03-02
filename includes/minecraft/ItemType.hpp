@@ -22,14 +22,17 @@ private:
     static map<string, int> idMap;
     Texture** textureList;
     ItemType();
+    int typeId;
     
 public:
     json itemData;
+    int getTypeId();
     bool isLoaded = false;
     map<string, int> variantMap;
     string* variants;
     int variantNum;
     bool isBlock;
+    char* iconFilePath;
 
 
     // item features

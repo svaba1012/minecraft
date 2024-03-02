@@ -18,23 +18,33 @@ void ItemType::init(){
     ItemType::types = new ItemType[typeNum];
     for(int i = 0; i < ItemType::typeNum; i++){
         ItemType::types[i].itemData = itemsData.at(i);
+        ItemType::types[i].typeId = i;
+        
         ItemType::nameMap.insert({(string) itemsData.at(i).at("item"), i});
         ItemType::idMap.insert({(string) itemsData.at(i).at("id"), i});
     }
 }
 
+int ItemType::getTypeId(){
+    return this->typeId;
+}
+
 ItemType* ItemType::getTypeByName(string name){
     int index = ItemType::nameMap[name]; 
+    ItemType* itemType = &ItemType::types[index];
+    itemType->loadData();
     // printf("Proba JSON aloo %d\n", index);
     // printf("Proba JSON alo %f\n", (float)BlockType::types[index].blockData.at("hardness"));
-    return &ItemType::types[index];
+    return itemType;
 }
 
 ItemType* ItemType::getTypeById(string name){
     int index = ItemType::idMap[name]; 
+    ItemType* itemType = &ItemType::types[index];
+    itemType->loadData();
     // printf("Proba JSON aloo %d\n", index);
     // printf("Proba JSON alo %f\n", (float)BlockType::types[index].blockData.at("hardness"));
-    return &ItemType::types[index];
+    return itemType;
 }
 
 
@@ -54,8 +64,11 @@ Texture* ItemType::makeTexture(string texturePath){
     string fullTexturePath ="./assets/extern_minecraft_assets/assets/minecraft/textures/" + texturePath + ".png";
       char* fullTexturePathChar = new char[fullTexturePath.length() + 1];
       strcpy(fullTexturePathChar, fullTexturePath.c_str()); 
+      this->iconFilePath = fullTexturePathChar;
     return new Texture(fullTexturePathChar);
 }
+
+
 
 void ItemType::loadData(){
     if(this->isLoaded){
@@ -197,6 +210,7 @@ void ItemType::loadData(){
             Texture* itemTexture;
             if(itemTexturesJSON.contains("all")){
 
+            // ! IMPLEMENT ICON BUILDING
             itemTexture = makeTexture((string)itemTexturesJSON.at("all"));
             itemTexture->loadTexture();
             this->textureList[0] = itemTexture;

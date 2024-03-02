@@ -99,6 +99,8 @@ class GameUI2D{
         
         // static Shader* shader;
 
+    protected:
+        virtual void draw(struct nk_context* ctx) = 0;
 
     public:
     // ! *dev can be removed as arg
@@ -111,8 +113,9 @@ class GameUI2D{
         void device_draw(int width, int height,enum nk_anti_aliasing AA);
         void pump_input(GLFWwindow *win);
 
+        void render();
+
         void init();
-        void draw();
         void free();
 
 };

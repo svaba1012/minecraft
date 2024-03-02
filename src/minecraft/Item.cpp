@@ -93,6 +93,7 @@ void Item::render(GLuint uniformModel, GLfloat deltaTime){
     for(int i = 0; i < this->meshList->size(); i++){
         (*meshList)[i]->renderMesh();
     }
+    // aaa
 }
 
 void Item::keyControl(bool* keys, GLfloat deltaTime){
