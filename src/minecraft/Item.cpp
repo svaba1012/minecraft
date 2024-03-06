@@ -35,6 +35,10 @@ void Item::setTypeById(string type){
     this->type->loadData();
 }
 
+void Item::onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime){
+
+}
+
 
 void Item::generateMeshes(){
     if(this->type->isBlock && Block::blockMeshes.size() > 0){

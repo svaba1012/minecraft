@@ -130,6 +130,8 @@ void Scene::render(){
 
         // listen for user inputs
         
+        bool isHitting =  false;
+
         for(int i = 0; i < this->userControllableGameObjects.size(); i++){
             this->userControllableGameObjects[i]->keyControl(this->getKeys(), deltaTime);
             this->userControllableGameObjects[i]->mouseControl(this->getXChange(), this->getYChange());
@@ -181,19 +183,39 @@ void Scene::render(){
         if(objectAimingAt != oldObjectAimingAt){
             if(oldObjectAimingAt){
                 oldObjectAimingAt->toogleOutline();
+                userControllableGameObjects[0]->interactWithObject(oldObjectAimingAt, 2, deltaTime);
             }
             oldObjectAimingAt = objectAimingAt;
             if(objectAimingAt){
                 objectAimingAt->toogleOutline();
                 // printf("Aiming at\n");
             }
+
         }
+
+
+        if(!mouseButtons[0] && objectAimingAt && isHitting){
+            isHitting = false;
+            userControllableGameObjects[0]->interactWithObject(objectAimingAt, 2, deltaTime);
+        }
+
         if(mouseButtons[0] && objectAimingAt){
-            vector<GameObject*>::iterator position = std::find(gameObjects.begin(), gameObjects.end(), objectAimingAt);
-            if (position != gameObjects.end()) // == myVector.end() means the element was not found
-            gameObjects.erase(position);
-            mouseButtons[0] = false;
+            isHitting = true;
+            userControllableGameObjects[0]->interactWithObject(objectAimingAt, 0, deltaTime);
+            if(objectAimingAt->health < 0.0){
+                vector<GameObject*>::iterator position = std::find(gameObjects.begin(), gameObjects.end(), objectAimingAt);
+                if (position != gameObjects.end()) // == myVector.end() means the element was not found
+                gameObjects.erase(position);
+                if(oldObjectAimingAt == objectAimingAt){
+                    oldObjectAimingAt = (GameObject*)NULL;
+                }
+                delete objectAimingAt;
+                objectAimingAt = (GameObject*)NULL;
+                // mouseButtons[0] = false;
+            }
+            
         }
+        
         // this->camera->keyControl(this->getKeys(), deltaTime);
         // this->camera->mouseControl(this->getXChange(), this->getYChange());
         this->shader->useShader();

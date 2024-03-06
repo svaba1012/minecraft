@@ -9,12 +9,14 @@ private:
 
     void generateMeshWithBorders(GLfloat borderWidth, vector<Mesh*> *listMesh);
 
+
      
 public:
     static vector<Mesh*> blockMeshes;
     BlockType* type;
     string typeName;
     string variantName;
+    
 
     Block(Scene* scene);
     Block(Scene* scene, glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale);
@@ -25,10 +27,16 @@ public:
     void render(GLuint uniformModel, GLfloat deltaTime);
 
 
+    
+
     void generateMeshes();
     void keyControl(bool* keys, GLfloat deltaTime);
     void mouseControl(GLfloat xChange, GLfloat yChange);
     ~Block();
+
+protected:
+    void onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime);
+
 };
 
 

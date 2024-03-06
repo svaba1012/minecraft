@@ -131,3 +131,8 @@ void Character:: mouseControl(GLfloat xChange, GLfloat yChange){
     this->update();
 }
 
+void Character::onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime){
+
+    
+}
+

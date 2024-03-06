@@ -35,6 +35,7 @@ protected:
     glm::vec3 axisOrientedBoundBoxMaxDot;
     glm::vec3 axisOrientedBoundBoxMinDot;
 
+    virtual void onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime) = 0;
 
 public:
     bool isStatic;
@@ -58,6 +59,8 @@ public:
     GLfloat circleInscribedR;
     GLfloat circleOutscribedR;
 
+    float health;
+
     GameObject(Scene* scene);
     virtual void generateMeshes() = 0;
     virtual void keyControl(bool* keys, GLfloat deltaTime) = 0;
@@ -75,6 +78,9 @@ public:
     void shit_func(GLfloat deltaTime);
 
     GameObject* getObjectAimingAt();
+
+    void interactWithObject(GameObject* go, int type, GLfloat deltaTime);
+    
     
     GameObject(Scene* scene, glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale);
     ~GameObject();

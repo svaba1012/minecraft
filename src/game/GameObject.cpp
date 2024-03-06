@@ -187,5 +187,11 @@ void GameObject::render(GLuint uniformModel, GLfloat deltaTime){
     
 // }
 
+
+
+void GameObject::interactWithObject(GameObject* go, int type, GLfloat deltaTime){
+    go->onInteracted(this, type, deltaTime);
+}
+
 GameObject::~GameObject(){
 }

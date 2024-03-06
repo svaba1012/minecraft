@@ -33,6 +33,8 @@ public:
     void toogleOutline();
 
     ~Item();
+protected:
+    void onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime);
 };
 
 

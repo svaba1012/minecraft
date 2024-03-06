@@ -11,6 +11,7 @@ Block::Block(Scene* scene):GameObject(scene){
     this->circleOutscribedR = 1.73 / 2;
     this->isStatic = true;
     this->isCollideable = true;
+    this->health = 1.0;
 }
 
 Block::Block(Scene* scene,glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale):GameObject(scene, pos,rotation, scale){
@@ -20,7 +21,7 @@ Block::Block(Scene* scene,glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale):Ga
     this->circleOutscribedR = 1.73 / 2;
     this->isStatic = true;
     this->isCollideable = true;
-
+    this->health = 1.0;
 }
 
 void Block::setType(string type, string variant){
@@ -29,6 +30,23 @@ void Block::setType(string type, string variant){
     this->type = BlockType::getTypeByName(type);
     this->type->loadData();
 }
+
+void Block::onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime){
+
+    if(type == 0){ //hit
+        this->health -= deltaTime;
+        // change texture to destroy_stage_0.png ....
+        printf("HITTING %f\n", deltaTime);
+    }else if(type == 1){ // access
+
+    }else if(type == 2){
+        this->health = 1.0;
+        printf("STOP HITTING\n");
+    }
+
+    
+}
+
 
 void Block::generateMeshWithBorders(GLfloat borderWidth, vector<Mesh*> *listMesh){
      unsigned int sideIndices[] = {
@@ -155,5 +173,5 @@ void Block:: mouseControl(GLfloat xChange, GLfloat yChange){
 }
 
 Block::~Block(){
-
+    printf("Implement item dropping\n");
 }

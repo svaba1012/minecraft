@@ -18,6 +18,8 @@ public:
     void keyControl(bool* keys, GLfloat deltaTime);
     void mouseControl(GLfloat xChange, GLfloat yChange);
     ~Character();
+protected:
+    void onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime);
 };
 
 
