@@ -80,6 +80,8 @@ public:
     GameObject* getObjectAimingAt();
 
     void interactWithObject(GameObject* go, int type, GLfloat deltaTime);
+
+    
     
     
     GameObject(Scene* scene, glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale);

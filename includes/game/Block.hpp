@@ -1,11 +1,16 @@
 #pragma once
 #include "game/GameObject.hpp"
 #include "game/BlockType.hpp"
+#include "minecraft/Item.hpp"
+#include "game/Scene.hpp"
+
+#define DESTROY_STATES_NUM 10
 
 class Block: public GameObject{
 private:
     /* data */
     static vector<Mesh*> blockMeshesWithBorders;
+    static Texture* destroyStatesTextures[10];
 
     void generateMeshWithBorders(GLfloat borderWidth, vector<Mesh*> *listMesh);
 

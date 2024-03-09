@@ -5,6 +5,7 @@ Mesh::Mesh(/* args */){
     this->VBO = 0;
     this->IBO = 0;
     this->texture = NULL;
+    this->overlayTexture = NULL;
 }
 
 
@@ -39,9 +40,19 @@ void Mesh::setTexture(Texture* texture){
     // this->texture->loadTexture();
 }
 
+void Mesh::setOverlayTexture(Texture* texture){
+    this->overlayTexture = texture;
+}
+
 void Mesh::renderMesh(){
     if(this->texture){
         this->texture->useTexture();
+    }
+    if(this->overlayTexture){
+        glUniform1i(glGetUniformLocation(4, "hasOverlayTexture"), 1);
+        this->overlayTexture->useTexture();
+    }else{
+        glUniform1i(glGetUniformLocation(4, "hasOverlayTexture"), 0);
     }
     glBindVertexArray(this->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,this->IBO);

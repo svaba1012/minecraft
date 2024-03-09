@@ -32,6 +32,9 @@ public:
     GLuint getAmbientIntensityLocation();
     GLuint getAmbientColorLocation();
 
+    void setTextureUniform(char* uniformName, int id);
+
+
 
     void useShader();
 

@@ -2,6 +2,7 @@
 
 vector<Mesh*> Block::blockMeshes;
 vector<Mesh*> Block::blockMeshesWithBorders;
+Texture* Block::destroyStatesTextures[10];
 
 
 Block::Block(Scene* scene):GameObject(scene){
@@ -34,13 +35,29 @@ void Block::setType(string type, string variant){
 void Block::onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime){
 
     if(type == 0){ //hit
-        this->health -= deltaTime;
+        this->health -= deltaTime / this->type->hardness;
         // change texture to destroy_stage_0.png ....
         printf("HITTING %f\n", deltaTime);
+        for(int i = 0; i < this->meshList->size(); i++){
+            int destroyStage = (int)((1.0 - this->health) * DESTROY_STATES_NUM);
+            printf("%d\n", destroyStage);
+            (*this->meshList)[i]->setOverlayTexture(Block::destroyStatesTextures[destroyStage]);
+        }
+        if(health <= 0.0){
+            Item* dropItem = new Item(this->scene, this->pos, glm::vec3(0.0, 0.0, 0.0),glm::vec3(1.0, 1.0, 1.0));
+            cout << "NAME"  << this->variantName << endl;
+            dropItem->setTypeByName(this->variantName);
+            // dropItem->setTypeById("dirt");
+            dropItem->generateMeshes();
+            this->scene->addNewGameObject(dropItem);
+        }
     }else if(type == 1){ // access
 
     }else if(type == 2){
         this->health = 1.0;
+        for(int i = 0; i < this->meshList->size(); i++){
+            (*this->meshList)[i]->setOverlayTexture((Texture*) NULL);
+        }
         printf("STOP HITTING\n");
     }
 
@@ -125,6 +142,18 @@ void Block::generateMeshes(){
         return;
     }
 
+    
+
+    for(int i = 0; i < DESTROY_STATES_NUM; i++){
+        char fileName[100] = "./assets/extern_minecraft_assets/assets/minecraft/textures/block/destroy_stage_5.png";
+        int len = sprintf(fileName, "./assets/extern_minecraft_assets/assets/minecraft/textures/block/destroy_stage_%d.png", i);
+        fileName[len] = '\0';
+        printf("%s\n", fileName);
+
+        Block::destroyStatesTextures[i] = new Texture(fileName);
+        Block::destroyStatesTextures[i]->loadTexture(1);
+    }
+
     generateMeshWithBorders(0.0, &Block::blockMeshes);
     generateMeshWithBorders(0.02, &Block::blockMeshesWithBorders);
 
@@ -135,6 +164,7 @@ void Block::render(GLuint uniformModel, GLfloat deltaTime){
     for(int i = 0; i < this->meshList->size(); i++){
         Texture *curTexture = this->type->getTexturesByVariantName(this->variantName, i);
         (*this->meshList)[i]->setTexture(curTexture);
+        // (*this->meshList)[i]->setOverlayTexture(Block::destroyStatesTextures[0]);
     }
     update();
     glm::mat4 model = glm::mat4(1);

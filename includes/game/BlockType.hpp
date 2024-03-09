@@ -18,6 +18,8 @@ private:
     static map<string, int> nameMap;
     Texture** textureList;
     BlockType(/* args */);
+
+    bool readJsonBool(char* fieldName);
     
 public:
     json blockData;
@@ -25,6 +27,19 @@ public:
     map<string, int> variantMap;
     string* variants;
     int variantNum;
+
+    float hardness;
+
+    bool needsStoneTool;
+    bool needsIronTool;
+    bool needsDiamondTool;
+
+    bool mineableWithAxe;
+    bool mineableWithPickaxe;
+    bool mineableWithHoe;
+    bool mineableWithShovel;
+
+
 
     static void init();
     static BlockType* getTypeByName(string name);

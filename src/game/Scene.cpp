@@ -10,11 +10,14 @@ Scene::Scene(){
     shader->addShader(fragmentShaderFilename, GL_FRAGMENT_SHADER);
     this->shader->compileShaders();
 
+    
+
     this->camera = new Camera(glm::vec3(2.5, 2.8, 2.5), glm::vec3(0.0, 1.0, 0.0), 0.0, 0.0, 5.0, 1.0);
 }
 
 void Scene::init(bool* keys, bool* mouseButtons){
     
+
     this->keys = keys;
     this->mouseButtons = mouseButtons;
     Character* character = new Character(this);
@@ -77,6 +80,11 @@ void Scene::init(bool* keys, bool* mouseButtons){
     
 
     light = Light(1.0, 1.0, 1.0, 0.4);
+
+    this->shader->useShader();
+
+    // this->shader->setTextureUniform("texture1", 0);
+    // this->shader->setTextureUniform("texture2", 1);
 }
 
 bool* Scene::getKeys(){
@@ -99,6 +107,11 @@ GLfloat Scene::getYChange(){
     this->yChange = 0.0;
     return change;
 }
+
+void Scene::addNewGameObject(GameObject* go){
+    this->gameObjects.push_back(go);
+}
+
 
 void Scene::setCamera(){
 
@@ -132,6 +145,7 @@ void Scene::render(){
         
         bool isHitting =  false;
 
+        
         for(int i = 0; i < this->userControllableGameObjects.size(); i++){
             this->userControllableGameObjects[i]->keyControl(this->getKeys(), deltaTime);
             this->userControllableGameObjects[i]->mouseControl(this->getXChange(), this->getYChange());
@@ -253,6 +267,9 @@ void Scene::render(){
         for(int i = 0; i < gameObjects.size(); i++){
             gameObjects[i]->render(uniformModel, deltaTime);
         }
+
+
+        
 
         
         

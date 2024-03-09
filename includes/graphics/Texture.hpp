@@ -13,7 +13,9 @@ using namespace std;
 class Texture{
 private:
     GLuint textureId;
+    GLuint textureIdSecond;
     int width, height, bitDepth;
+    GLuint textureSlot;
 
     /* data */
 public:
@@ -21,7 +23,8 @@ public:
     Texture(char* fileLocation);
     Texture(string filelocation);
 
-    void loadTexture();
+
+    void loadTexture(GLuint textureSlot = 0);
     void useTexture();
     void clearTexture();
 

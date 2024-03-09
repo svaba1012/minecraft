@@ -91,6 +91,14 @@ void Shader::compileShaders(){
         return;
     }
 
+    // glUniform1i(glGetUniformLocation(this->program, "texture1"), 0); // set it manually
+    // glUniform1i(glGetUniformLocation(this->program, "texture2"), 1); // set it manually
+
+
+}
+
+void Shader::setTextureUniform(char* uniformName, int id){
+    glUniform1i(glGetUniformLocation(this->program, uniformName), id); // set it manually
 }
 
 
@@ -126,6 +134,12 @@ GLuint Shader::getAmbientColorLocation(){
 void Shader::useShader(){
     
     glUseProgram(this->program);
+    printf("SHADER: %d\n", this->program);
+    
+        glUniform1i(glGetUniformLocation(this->program, "texture1"), 0); // set it manually
+
+        glUniform1i(glGetUniformLocation(this->program, "texture2"), 1); // set it manually
+
 }
     
 

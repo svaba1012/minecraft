@@ -37,6 +37,7 @@ private:
     vector<GameObject*> gameObjects;
     vector<GameObject*> userControllableGameObjects;
 public:
+    void addNewGameObject(GameObject* go);
     Camera* camera;
 const GLint WIDTH = 800, HEIGHT = 600;
     GLfloat xChange;

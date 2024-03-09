@@ -6,6 +6,7 @@
 
 Texture::Texture(char* fileLocation){
     this->textureId = 0;
+    this->textureIdSecond = 0;
     this->bitDepth = 0;
     this->width = 0; 
     this->height = 0;
@@ -14,6 +15,7 @@ Texture::Texture(char* fileLocation){
 
 Texture::Texture(string fileLocationStr){
     this->textureId = 0;
+    this->textureIdSecond = 0;
     this->bitDepth = 0;
     this->width = 0; 
     this->height = 0;
@@ -21,7 +23,8 @@ Texture::Texture(string fileLocationStr){
     this->fileLocation = (char* )fileLocation;
 }
 
-void Texture::loadTexture(){
+void Texture::loadTexture(GLuint textureSlot){
+    this->textureSlot = textureSlot;
     unsigned char* textureData = stbi_load(this->fileLocation, &width, &height, &bitDepth, 0);
 
     cout<< bitDepth << endl;
@@ -48,16 +51,21 @@ void Texture::loadTexture(){
     //     height *= scale;
     // }
     
-
-    
-
     if(!textureData){
         printf("Failed to find texture file %s\n", fileLocation);
         return;
     }
 
+
+    // glActiveTexture(GL_TEXTURE0);
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId);
+    
+    if(bitDepth == 3){
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+    }else if(bitDepth == 4){
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+    }
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -67,26 +75,54 @@ void Texture::loadTexture(){
     float borderColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-    if(bitDepth == 3){
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
-    }else if(bitDepth == 4){
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
-    }
-    
-
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, 0);
     stbi_image_free(textureData);
+
+    
+    // int width1, height1, bitDepth1;
+    // unsigned char* textureData1 = stbi_load("./assets/extern_minecraft_assets/assets/minecraft/textures/block/destroy_stage_5.png", &width1, &height1, &bitDepth1, 0);
+    
+    // if(!textureData1){
+    //     printf("Failed to find texture file %s\n", fileLocation);
+    //     return;
+    // }
+
+
+    // // glActiveTexture(GL_TEXTURE0);
+    // glGenTextures(1, &textureIdSecond);
+    // glBindTexture(GL_TEXTURE_2D, textureIdSecond);
+    
+    // if(bitDepth1 == 3){
+    //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData1);
+    // }else if(bitDepth1 == 4){
+    //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width1, height1, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData1);
+    // }
+
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    // float borderColor1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    // glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor1);
+
+    // glGenerateMipmap(GL_TEXTURE_2D);
+
+    // // glBindTexture(GL_TEXTURE_2D, 0);
+    // stbi_image_free(textureData1);
+
 }
 
 
-
-
 void Texture::useTexture(){
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glActiveTexture(GL_TEXTURE0);
+    // glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTexture(GL_TEXTURE0 + this->textureSlot);
     glBindTexture(GL_TEXTURE_2D, textureId);
+    // glActiveTexture(GL_TEXTURE1);
+    // glBindTexture(GL_TEXTURE_2D, textureIdSecond);
+
 }
 
 void Texture::clearTexture(){
