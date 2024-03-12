@@ -23,6 +23,9 @@ public:
     void setInventoryItem(InventoryItem* item, int id);
     void setSelectedItem(InventoryItem* item);
 
+    void itemBoxOnMouseLeftClick(InventoryItem** ptrSlotItem );
+    void itemBoxOnMouseRightClick(InventoryItem** ptrSlotItem );
+
     void draw(struct nk_context* ctx);
 
     ~Inventory();

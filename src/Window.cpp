@@ -199,7 +199,7 @@ void Window::run(){
     // ui2dInventory.uiRender = drawInventory;
     // ui2dInventory.init();
 
-    GameUI2D* inventory = new Inventory(27, 9);
+    GameUI2D* inventory = new Inventory(36, 9);
 
     inventory->init(); 
 
@@ -214,9 +214,25 @@ void Window::run(){
      MinecraftInventoryItem* testItem2 = new MinecraftInventoryItem(ItemType::getTypeById("diamond"));
 
      testItem2->setCount(50);
+    MinecraftInventoryItem* testItem3 = new MinecraftInventoryItem(ItemType::getTypeById("diamond_helmet"));
+
+    MinecraftInventoryItem* testItem4 = new MinecraftInventoryItem(ItemType::getTypeById("iron_helmet"));
+
+    MinecraftInventoryItem* testItem5 = new MinecraftInventoryItem(ItemType::getTypeById("golden_chestplate"));
+
+    MinecraftInventoryItem* testItem6 = new MinecraftInventoryItem(ItemType::getTypeById("apple"));
+    MinecraftInventoryItem* testItem7 = new MinecraftInventoryItem(ItemType::getTypeById("apple"));
+
+
     ((Inventory*)inventory)->setInventoryItem(testItem, 5);
     ((Inventory*)inventory)->setInventoryItem(testItem1, 7);
     ((Inventory*)inventory)->setInventoryItem(testItem2, 17);
+    ((Inventory*)inventory)->setInventoryItem(testItem3, 20);
+    ((Inventory*)inventory)->setInventoryItem(testItem4, 30);
+    ((Inventory*)inventory)->setInventoryItem(testItem5, 31);
+    ((Inventory*)inventory)->setInventoryItem(testItem6, 32);
+    ((Inventory*)inventory)->setInventoryItem(testItem7, 33);
+
 
     while (!glfwWindowShouldClose(this->glfwWindow)){
 

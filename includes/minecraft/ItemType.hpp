@@ -23,10 +23,11 @@ private:
     Texture** textureList;
     ItemType();
     int typeId;
+    string name;
+    // string id;
     
 public:
     json itemData;
-    int getTypeId();
     bool isLoaded = false;
     map<string, int> variantMap;
     string* variants;
@@ -62,6 +63,9 @@ public:
     static void init();
     static ItemType* getTypeByName(string name);
     static ItemType* getTypeById(string id);
+    int getTypeId();
+    string getId();
+    string getName();
     
     void loadData();
     Texture* makeTexture(string texturePath);

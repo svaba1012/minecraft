@@ -16,17 +16,31 @@ void ItemType::init(){
 
     ItemType::typeNum = itemsData.size();
     ItemType::types = new ItemType[typeNum];
+    string tempName;
+    string tempId; 
     for(int i = 0; i < ItemType::typeNum; i++){
         ItemType::types[i].itemData = itemsData.at(i);
         ItemType::types[i].typeId = i;
+        tempName = (string) itemsData.at(i).at("item");
+        tempId = (string) itemsData.at(i).at("id");
+        ItemType::types[i].name = tempName;
+        ItemType::types[i].id = tempId;
         
-        ItemType::nameMap.insert({(string) itemsData.at(i).at("item"), i});
-        ItemType::idMap.insert({(string) itemsData.at(i).at("id"), i});
+        ItemType::nameMap.insert({tempName, i});
+        ItemType::idMap.insert({tempId, i});
     }
 }
 
 int ItemType::getTypeId(){
     return this->typeId;
+}
+
+string ItemType::getId(){
+    return this->id;
+}
+
+string ItemType::getName(){
+    return this->name;
 }
 
 ItemType* ItemType::getTypeByName(string name){

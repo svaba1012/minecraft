@@ -134,7 +134,6 @@ GLuint Shader::getAmbientColorLocation(){
 void Shader::useShader(){
     
     glUseProgram(this->program);
-    printf("SHADER: %d\n", this->program);
     
         glUniform1i(glGetUniformLocation(this->program, "texture1"), 0); // set it manually
 
