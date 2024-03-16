@@ -50,6 +50,7 @@ public:
     glm::vec3 right;
     glm::vec3 up;
     glm::vec3 velocity;
+    glm::vec3 acceleration;
     GLfloat movementDirection;
     GLfloat movementSpeed;
     GLfloat rollSpeed;
@@ -60,6 +61,7 @@ public:
     GLfloat circleOutscribedR;
 
     float health;
+    bool isAffectedByGravity = false;
 
     GameObject(Scene* scene);
     virtual void generateMeshes() = 0;
@@ -73,7 +75,9 @@ public:
     void update();
 
     void applyMovement(GLfloat deltaTime);
-    bool isCollidingWith(GameObject* anotherObject, GLfloat deltaTime);
+    //return int 0-3
+    //0 - no collision, 1 - xAxis collision, 2 - yAxis collision, 3 - zAxisColision
+    int isCollidingWith(GameObject* anotherObject, GLfloat deltaTime);
 
     void shit_func(GLfloat deltaTime);
 
@@ -81,6 +85,7 @@ public:
 
     void interactWithObject(GameObject* go, int type, GLfloat deltaTime);
 
+    void setAffectedByGravity(bool isAffected);
     
     
     

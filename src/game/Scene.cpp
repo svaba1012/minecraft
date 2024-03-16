@@ -4,6 +4,7 @@
 Scene::Scene(){
     Shader* shader = new Shader();
     this->shader = shader;
+    
     char* vertexShaderFilename = "./assets/shaders/vertexShader.glsl"; 
     char* fragmentShaderFilename = "./assets/shaders/fragmentShader.glsl"; 
     shader->addShader(vertexShaderFilename, GL_VERTEX_SHADER);
@@ -17,7 +18,7 @@ Scene::Scene(){
 
 void Scene::init(bool* keys, bool* mouseButtons){
     
-
+    this->time = 0.0;
     this->keys = keys;
     this->mouseButtons = mouseButtons;
     Character* character = new Character(this);
@@ -42,12 +43,12 @@ void Scene::init(bool* keys, bool* mouseButtons){
         }   
     }
 
-    for(int i = 0; i < 10; i++){
-        Item* item = new Item(this, glm::vec3((GLfloat)i, 1.01, (GLfloat)i), glm::vec3(0.0, 0.0, 0.0) ,glm::vec3(1.0, 1.0, 1.0));
-        item->setTypeById("coal_ore");
-        item->generateMeshes();
-        gameObjects.push_back(item);
-    }
+    // for(int i = 0; i < 10; i++){
+    //     Item* item = new Item(this, glm::vec3((GLfloat)i, 1.01, (GLfloat)i), glm::vec3(0.0, 0.0, 0.0) ,glm::vec3(1.0, 1.0, 1.0));
+    //     item->setTypeById("coal_ore");
+    //     item->generateMeshes();
+    //     gameObjects.push_back(item);
+    // }
 
     printf("Napravljen pod\n");
 
@@ -138,6 +139,7 @@ void Scene::render(){
         nowTime = glfwGetTime();
         deltaTime = nowTime - lastTime;
         lastTime = nowTime;
+        this->time += deltaTime;
 
         // printf("Init    fine\n");
 
@@ -156,16 +158,18 @@ void Scene::render(){
         // ...
 
         // check for collisions
-        bool isColliding = false;
+        int isColliding = 0;
         
         for(int i = 0; i < this->gameObjects.size(); i++){
             GameObject* curGo = gameObjects[i];
-            if(curGo->isStatic || !curGo->isCollideable){
+            if(curGo->isStatic){
                 continue;
             }
+
+            
                 
             for(int j = 0; j < this->gameObjects.size(); j++){
-                if(!gameObjects[j]->isCollideable || curGo == gameObjects[j]){
+                if((!curGo->isCollideable && !gameObjects[j]->isCollideable) || curGo == gameObjects[j]){
                     continue;
                 }
                 isColliding = curGo->isCollidingWith(gameObjects[j], deltaTime);
@@ -175,10 +179,34 @@ void Scene::render(){
             }
             
             
-            if(isColliding){
-                break;
+
+            if(!isColliding){
+                curGo->applyMovement(deltaTime);
+            }else{
+                float xVel = curGo->velocity.x;
+                float yVel = curGo->velocity.y;
+                float zVel = curGo->velocity.z;
+                
+                switch(isColliding){
+                    case 1: xVel *= -1;
+                            //xVel = 0.0;
+                            break;
+                    case 2: yVel *= -1;
+                            //yVel = 0.0;
+                            break;
+                    case 3: zVel *= -1;
+                            //zVel = 0.0;
+                            break;         
+                }
+
+                if(isColliding == 2 && yVel > 0.0){
+                    continue;
+                }
+                    curGo->velocity = glm::vec3(xVel, yVel, zVel);
+                    curGo->applyMovement(deltaTime);
+                //curGo->acceleration = glm::vec3(0.0, 0.0, 0.0);
+                
             }
-            curGo->applyMovement(deltaTime);
         }
         if(!isColliding){
             // printf("Nema kolizije\n");

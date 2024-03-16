@@ -16,6 +16,8 @@ GameObject::GameObject(Scene* scene){
     this->yawSpeed = 0.0;
     this->pitchSpeed = 0.0;
     this->velocity = glm::vec3(0.0, 0.0, 0.0);
+    this->acceleration = glm::vec3(0.0, 0.0, 0.0);
+    this->isAffectedByGravity = false;
 }
 
 GameObject::GameObject(Scene* scene, glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale){
@@ -26,7 +28,18 @@ GameObject::GameObject(Scene* scene, glm::vec3 pos, glm::vec3 rotation, glm::vec
     this->pitch = rotation[2];
     this->scale = scale;
     this->velocity = glm::vec3(0.0, 0.0, 0.0);
+    this->acceleration = glm::vec3(0.0, 0.0, 0.0);
     this->update();
+    this->isAffectedByGravity = false;
+}
+
+void GameObject::setAffectedByGravity(bool isAffected){
+    //non moveable objects can't be affected be gravity
+    this->isAffectedByGravity = isAffected;
+    if(isAffected){
+        this->acceleration += glm::vec3(0.0, -scene->gravityIntensity, 0.0);
+        //this->velocity +=  glm::vec3(0.0, -scene->gravityIntensity, 0.0);
+    }
 }
 
 void GameObject::shit_func(GLfloat deltaTime){
@@ -38,13 +51,13 @@ void GameObject::shit_func(GLfloat deltaTime){
 }
 
 void GameObject::applyMovement(GLfloat deltaTime){
+    this->velocity += deltaTime * this->acceleration;
     this->pos += deltaTime * this->velocity;
 }
 
-bool GameObject::isCollidingWith(GameObject* anotherObject, GLfloat deltaTime){
+int GameObject::isCollidingWith(GameObject* anotherObject, GLfloat deltaTime){
     glm::vec3 thisPotentialPos = this->pos + deltaTime * this->velocity;
     glm::vec3 otherPotentialPos = anotherObject->pos + deltaTime * anotherObject->velocity;
-
 
     glm::vec3 axisOrientedBoundBoxMaxDot;
     glm::vec3 axisOrientedBoundBoxMinDot;
@@ -55,23 +68,100 @@ bool GameObject::isCollidingWith(GameObject* anotherObject, GLfloat deltaTime){
     glm::vec3 otherMinDot = anotherObject->axisOrientedBoundBoxMinDot + otherPotentialPos;
     
     if(thisMinDot.x > otherMaxDot.x){
-        return false;
+        return 0;
     }
     if(thisMaxDot.x < otherMinDot.x){
-        return false;
+        return 0;
     }
     if(thisMinDot.y > otherMaxDot.y){
-        return false;
+        return 0;
     }
     if(thisMaxDot.y < otherMinDot.y){
-        return false;
+        return 0;
     }
     if(thisMinDot.z > otherMaxDot.z){
-        return false;
+        return 0;
     }
     if(thisMaxDot.z < otherMinDot.z){
-        return false;
+        return 0;
     }
+
+    //check is x axis collision
+    thisPotentialPos = this->pos;
+    thisPotentialPos.x = this->pos.x + deltaTime * this->velocity.x;
+
+    thisMaxDot = this->axisOrientedBoundBoxMaxDot + thisPotentialPos;
+    thisMinDot = this->axisOrientedBoundBoxMinDot + thisPotentialPos;
+    bool isAxisCollision = true;
+    if(thisMinDot.x > otherMaxDot.x){
+        isAxisCollision = false;
+    }else if(thisMaxDot.x < otherMinDot.x){
+        isAxisCollision = false;
+    }else if(thisMinDot.y > otherMaxDot.y){
+        isAxisCollision = false;
+    }else if(thisMaxDot.y < otherMinDot.y){
+        isAxisCollision = false;
+    }else if(thisMinDot.z > otherMaxDot.z){
+        isAxisCollision = false;
+    }else if(thisMaxDot.z < otherMinDot.z){
+        isAxisCollision = false;
+    }
+    if(isAxisCollision){
+        printf("Collision x detected\n");
+        return 1; //1
+    }
+
+//check is y axis collision
+    thisPotentialPos = this->pos;
+    thisPotentialPos.y = this->pos.y + deltaTime * this->velocity.y;
+
+    thisMaxDot = this->axisOrientedBoundBoxMaxDot + thisPotentialPos;
+    thisMinDot = this->axisOrientedBoundBoxMinDot + thisPotentialPos;
+    isAxisCollision = true;
+    if(thisMinDot.x > otherMaxDot.x){
+        isAxisCollision = false;
+    }else if(thisMaxDot.x < otherMinDot.x){
+        isAxisCollision = false;
+    }else if(thisMinDot.y > otherMaxDot.y){
+        isAxisCollision = false;
+    }else if(thisMaxDot.y < otherMinDot.y){
+        isAxisCollision = false;
+    }else if(thisMinDot.z > otherMaxDot.z){
+        isAxisCollision = false;
+    }else if(thisMaxDot.z < otherMinDot.z){
+        isAxisCollision = false;
+    }
+    if(isAxisCollision){
+        printf("Collision y detected\n");
+        return 2; //2
+    }
+
+    //check is y axis collision
+    thisPotentialPos = this->pos;
+    thisPotentialPos.z = this->pos.z + deltaTime * this->velocity.z;
+
+    thisMaxDot = this->axisOrientedBoundBoxMaxDot + thisPotentialPos;
+    thisMinDot = this->axisOrientedBoundBoxMinDot + thisPotentialPos;
+    isAxisCollision = true;
+    if(thisMinDot.x > otherMaxDot.x){
+        isAxisCollision = false;
+    }else if(thisMaxDot.x < otherMinDot.x){
+        isAxisCollision = false;
+    }else if(thisMinDot.y > otherMaxDot.y){
+        isAxisCollision = false;
+    }else if(thisMaxDot.y < otherMinDot.y){
+        isAxisCollision = false;
+    }else if(thisMinDot.z > otherMaxDot.z){
+        isAxisCollision = false;
+    }else if(thisMaxDot.z < otherMinDot.z){
+        isAxisCollision = false;
+    }
+    if(isAxisCollision){
+        printf("Collision z detected\n");
+        return 3; //3
+    }
+
+
     
     return true;
 }

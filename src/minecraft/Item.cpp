@@ -3,24 +3,25 @@
 vector<Mesh*> Item::squareMeshes;
 
 Item::Item(Scene* scene):GameObject(scene){
-    this->axisOrientedBoundBoxMaxDot = glm::vec3(0.5, 0.5, 0.5);
-    this->axisOrientedBoundBoxMinDot = glm::vec3(-0.5, -0.5, -0.5);
-    this->circleInscribedR = 0.5;
-    this->circleOutscribedR = 1.73 / 2;
-    this->isStatic = true;
-    this->isCollideable = true;
+    this->axisOrientedBoundBoxMaxDot = glm::vec3(0.4, 0.4, 0.4);
+    this->axisOrientedBoundBoxMinDot = glm::vec3(-0.4, -0.4, -0.4);
+    this->circleInscribedR = 0.8 * 0.5;
+    this->circleOutscribedR = 0.8 * 1.73 / 2;
+    this->isStatic = false;
+    this->isCollideable = false;
+    this->setAffectedByGravity(true);
 }
 
 Item::Item(Scene* scene,glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale):GameObject(scene, pos,rotation, scale){
-    this->axisOrientedBoundBoxMaxDot = glm::vec3(0.5, 0.5, 0.5);
-    this->axisOrientedBoundBoxMinDot = glm::vec3(-0.5, -0.5, -0.5);
-    this->circleInscribedR = 0.5;
-    this->circleOutscribedR = 1.41 / 2;
-    this->isStatic = true;
-    this->isCollideable = true;
-
+    this->axisOrientedBoundBoxMaxDot = glm::vec3(0.4, 0.4, 0.4);
+    this->axisOrientedBoundBoxMinDot = glm::vec3(-0.4, -0.4, -0.4);
+    this->circleInscribedR = 0.8 * 0.5;
+    this->circleOutscribedR = 0.8 * 1.73  / 2;
+    this->isStatic = false;
+    this->isCollideable = false;
     this->scale = glm::vec3(0.4, 0.4, 0.4);
     this->yawSpeed = 50.1;
+    this->setAffectedByGravity(true);
 }
 
 void Item::setTypeByName(string type){
@@ -84,7 +85,11 @@ void Item::render(GLuint uniformModel, GLfloat deltaTime){
     update();
     glm::mat4 model = glm::mat4(1);
     // model = glm::translate(model, glm::vec3(-0.5, -0.5, -0.5));
-    model = glm::translate(model, this->pos);
+
+    //wave animation
+    glm::vec3 wavingPos = glm::vec3(this->pos.x, this->pos.y + 0.15 * sin(2 * this->scene->time), this->pos.z);
+
+    model = glm::translate(model, wavingPos);
     model = glm::scale(model, this->scale);
     // model = glm::rotate(model, glm::radians(this->roll), glm::vec3(1.0, 0.0, 0.0));
     model = glm::rotate(model, glm::radians(-this->yaw), glm::vec3(0.0, 1.0, 0.0));    

@@ -37,14 +37,18 @@ void Block::onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime){
     if(type == 0){ //hit
         this->health -= deltaTime / this->type->hardness;
         // change texture to destroy_stage_0.png ....
-        printf("HITTING %f\n", deltaTime);
+        // printf("HITTING %f\n", deltaTime);
         for(int i = 0; i < this->meshList->size(); i++){
             int destroyStage = (int)((1.0 - this->health) * DESTROY_STATES_NUM);
-            printf("%d\n", destroyStage);
+            //printf("%d\n", destroyStage);
             (*this->meshList)[i]->setOverlayTexture(Block::destroyStatesTextures[destroyStage]);
         }
         if(health <= 0.0){
             Item* dropItem = new Item(this->scene, this->pos, glm::vec3(0.0, 0.0, 0.0),glm::vec3(1.0, 1.0, 1.0));
+            const float velocityIntensity = 2.0;
+            const float angle1 = rand();
+            const float angle2 = rand();
+            dropItem->velocity = velocityIntensity * glm::vec3(sin(angle1)*cos(angle2), sin(angle1)*sin(angle2), cos(angle1));
             cout << "NAME"  << this->variantName << endl;
             dropItem->setTypeByName(this->variantName);
             // dropItem->setTypeById("dirt");
@@ -58,7 +62,7 @@ void Block::onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime){
         for(int i = 0; i < this->meshList->size(); i++){
             (*this->meshList)[i]->setOverlayTexture((Texture*) NULL);
         }
-        printf("STOP HITTING\n");
+        // printf("STOP HITTING\n");
     }
 
     

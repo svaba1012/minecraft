@@ -16,6 +16,8 @@ public:
     string typeName;
     string typeId;
 
+    
+
     // ? maybe no
     string variantName;
 

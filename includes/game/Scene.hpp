@@ -36,13 +36,16 @@ private:
     glm::vec3 cameraOffset;
     vector<GameObject*> gameObjects;
     vector<GameObject*> userControllableGameObjects;
+
 public:
     void addNewGameObject(GameObject* go);
     Camera* camera;
-const GLint WIDTH = 800, HEIGHT = 600;
+    const GLint WIDTH = 800, HEIGHT = 600;
     GLfloat xChange;
     GLfloat yChange;
-    
+    float gravityIntensity = 12.0;
+    double time;
+
     Scene();
     void init(bool* keys, bool* mouseButtons);
     void render();
