@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 
-#include "gameLib/ui/GameUI2D.hpp"
 #include "gameLib/inventory/InventoryItem.hpp"
 #include "minecraft/MinecraftInventoryItem.hpp"
 #include "Window.hpp"
@@ -9,24 +8,21 @@
 
 using namespace std;
 
-class Inventory: public GameUI2D{
+class Inventory{
 private:
-    int numOfSlots;
-    int numOfCols;
-    vector<InventoryItem*> itemSlots;
     
 public:
+
+    int numOfSlots;
+    vector<InventoryItem*> itemSlots;
     InventoryItem* selectedItem = (InventoryItem*) NULL;
-    Inventory(int initialNumOfSlots, int numOfCols);
+    Inventory(int initialNumOfSlots);
 
     InventoryItem* getInventoryItem(int id);
     void setInventoryItem(InventoryItem* item, int id);
     void setSelectedItem(InventoryItem* item);
 
-    void itemBoxOnMouseLeftClick(InventoryItem** ptrSlotItem );
-    void itemBoxOnMouseRightClick(InventoryItem** ptrSlotItem );
-
-    void draw(struct nk_context* ctx);
+    int pushItemInInventory(InventoryItem* item);
 
     ~Inventory();
 };

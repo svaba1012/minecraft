@@ -2,11 +2,15 @@
 #include "game/Character.hpp"
 
 
+Character* Character::instance;
+
 Character::Character(Scene *scene):GameObject(scene){
     this->axisOrientedBoundBoxMaxDot = glm::vec3(0.5, 0.5, 0.5);
     this->axisOrientedBoundBoxMinDot = glm::vec3(-0.5, -0.5, -0.5);
     this->isStatic = false;
     this->isCollideable = true;
+    this->inventory = new Inventory(36);
+    Character::instance = this;
 }
 
 Character::~Character(){
@@ -130,6 +134,14 @@ void Character:: mouseControl(GLfloat xChange, GLfloat yChange){
     }
     this->update();
 }
+
+void Character::collectItem(Item* item){
+    MinecraftInventoryItem* invItem = new MinecraftInventoryItem(item->type);
+    if(inventory->pushItemInInventory(invItem) >= 0){
+        ((OpenWorldScene*)this->scene)->removeCollectable(item);
+    }
+}
+
 
 void Character::onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime){
 

@@ -1,5 +1,6 @@
 #include "game/GameObject.hpp"
-#include "game/Scene.hpp"
+#include "gameLib/Scene.hpp"
+#include "game/OpenWorldScene.hpp"
 
 
 
@@ -37,7 +38,7 @@ void GameObject::setAffectedByGravity(bool isAffected){
     //non moveable objects can't be affected be gravity
     this->isAffectedByGravity = isAffected;
     if(isAffected){
-        this->acceleration += glm::vec3(0.0, -scene->gravityIntensity, 0.0);
+        this->acceleration += glm::vec3(0.0, -((OpenWorldScene*)scene)->gravityIntensity, 0.0);
         //this->velocity +=  glm::vec3(0.0, -scene->gravityIntensity, 0.0);
     }
 }

@@ -13,7 +13,9 @@
 #include "graphics/Texture.hpp"
 #include "./Light.hpp"
 #include "game/Block.hpp"
-#include "game/Scene.hpp"
+#include "gameLib/Scene.hpp"
+#include "game/OpenWorldScene.hpp"
+#include "gameLib/SceneControls.hpp"
 #include "gameLib/ui/GameUI2D.hpp"
 
 using namespace std;
@@ -26,6 +28,7 @@ private:
     void createCallbacks();
     
     Scene* curScene;
+    Scene* overlayScene;
 
     GLfloat lastX;
     GLfloat lastY;
@@ -39,10 +42,10 @@ private:
     static void handleKeys(GLFWwindow* window, int key, int code, int action, int mode);
     static void handleMouseButtons(GLFWwindow* window, int button, int action, int mods);
 
-    // ! remove to Character
-    bool isInventoryOpen = false;
     
 public:
+    // ! remove to Character
+    static bool isInventoryOpen;
     static GLFWwindow* window;
     Window(/* args */);
 

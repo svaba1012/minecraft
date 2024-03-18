@@ -53,7 +53,7 @@ void Block::onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime){
             dropItem->setTypeByName(this->variantName);
             // dropItem->setTypeById("dirt");
             dropItem->generateMeshes();
-            this->scene->addNewGameObject(dropItem);
+            ((OpenWorldScene*)this->scene)->addNewCollectable(dropItem);
         }
     }else if(type == 1){ // access
 

@@ -2,7 +2,7 @@
 #include "game/GameObject.hpp"
 #include "game/BlockType.hpp"
 #include "minecraft/Item.hpp"
-#include "game/Scene.hpp"
+#include "game/OpenWorldScene.hpp"
 
 #define DESTROY_STATES_NUM 10
 

@@ -2,7 +2,7 @@
 
 #include "game/BlockType.hpp"
 #include "minecraft/ItemType.hpp"
-#include "gameLib/inventory/Inventory.hpp"
+#include "gameLib/inventory/InventoryUI.hpp"
 #include "minecraft/MinecraftInventoryItem.hpp"
 
 #define NK_IMPLEMENTATION
@@ -12,7 +12,7 @@
 #define MIN_TEXTURE_HEIGHT 50
 
 GLFWwindow* Window::window;
-
+bool Window::isInventoryOpen = false;
 
 Window::Window(){
     for(int i = 0; i < 1024; i++){
@@ -97,7 +97,7 @@ bool Window::init(){
 
     
 
-    this->curScene = new Scene();
+    this->curScene = new OpenWorldScene();
 
     for(int i = 0; i < 3; i++){
         this->mouseButtons[i] = false;
@@ -131,7 +131,8 @@ void Window::handleKeys(GLFWwindow* window, int key, int code, int action, int m
             theWindow->keys[key] = false;
         }
     }
-
+    theWindow->curScene->onKeys(key, code, action, mode);
+    theWindow->overlayScene->onKeys(key, code, action, mode);
 }
 void Window::handleMouse(GLFWwindow* window, double xPos, double yPos){
     Window* theWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
@@ -199,40 +200,43 @@ void Window::run(){
     // ui2dInventory.uiRender = drawInventory;
     // ui2dInventory.init();
 
-    GameUI2D* inventory = new Inventory(36, 9);
+    // GameUI2D* inventory = new Inventory(36, 9);
 
-    inventory->init(); 
+    // inventory->init(); 
 
     this->curScene->init(this->keys, this->mouseButtons);
 
     
-    MinecraftInventoryItem* testItem = new MinecraftInventoryItem(ItemType::getTypeById("diamond_sword"));
-     MinecraftInventoryItem* testItem1 = new MinecraftInventoryItem(ItemType::getTypeById("diamond"));
+    // MinecraftInventoryItem* testItem = new MinecraftInventoryItem(ItemType::getTypeById("diamond_sword"));
+    //  MinecraftInventoryItem* testItem1 = new MinecraftInventoryItem(ItemType::getTypeById("diamond"));
 
-     testItem1->setCount(40);
+    //  testItem1->setCount(40);
 
-     MinecraftInventoryItem* testItem2 = new MinecraftInventoryItem(ItemType::getTypeById("diamond"));
+    //  MinecraftInventoryItem* testItem2 = new MinecraftInventoryItem(ItemType::getTypeById("diamond"));
 
-     testItem2->setCount(50);
-    MinecraftInventoryItem* testItem3 = new MinecraftInventoryItem(ItemType::getTypeById("diamond_helmet"));
+    //  testItem2->setCount(50);
+    // MinecraftInventoryItem* testItem3 = new MinecraftInventoryItem(ItemType::getTypeById("diamond_helmet"));
 
-    MinecraftInventoryItem* testItem4 = new MinecraftInventoryItem(ItemType::getTypeById("iron_helmet"));
+    // MinecraftInventoryItem* testItem4 = new MinecraftInventoryItem(ItemType::getTypeById("iron_helmet"));
 
-    MinecraftInventoryItem* testItem5 = new MinecraftInventoryItem(ItemType::getTypeById("golden_chestplate"));
+    // MinecraftInventoryItem* testItem5 = new MinecraftInventoryItem(ItemType::getTypeById("golden_chestplate"));
 
-    MinecraftInventoryItem* testItem6 = new MinecraftInventoryItem(ItemType::getTypeById("apple"));
-    MinecraftInventoryItem* testItem7 = new MinecraftInventoryItem(ItemType::getTypeById("apple"));
+    // MinecraftInventoryItem* testItem6 = new MinecraftInventoryItem(ItemType::getTypeById("apple"));
+    // MinecraftInventoryItem* testItem7 = new MinecraftInventoryItem(ItemType::getTypeById("apple"));
 
 
-    ((Inventory*)inventory)->setInventoryItem(testItem, 5);
-    ((Inventory*)inventory)->setInventoryItem(testItem1, 7);
-    ((Inventory*)inventory)->setInventoryItem(testItem2, 17);
-    ((Inventory*)inventory)->setInventoryItem(testItem3, 20);
-    ((Inventory*)inventory)->setInventoryItem(testItem4, 30);
-    ((Inventory*)inventory)->setInventoryItem(testItem5, 31);
-    ((Inventory*)inventory)->setInventoryItem(testItem6, 32);
-    ((Inventory*)inventory)->setInventoryItem(testItem7, 33);
+    // ((Inventory*)inventory)->setInventoryItem(testItem, 5);
+    // ((Inventory*)inventory)->setInventoryItem(testItem1, 7);
+    // ((Inventory*)inventory)->setInventoryItem(testItem2, 17);
+    // ((Inventory*)inventory)->setInventoryItem(testItem3, 20);
+    // ((Inventory*)inventory)->setInventoryItem(testItem4, 30);
+    // ((Inventory*)inventory)->setInventoryItem(testItem5, 31);
+    // ((Inventory*)inventory)->setInventoryItem(testItem6, 32);
+    // ((Inventory*)inventory)->setInventoryItem(testItem7, 33);
 
+
+    overlayScene = new SceneControls();
+    overlayScene->init(this->keys, this->mouseButtons);
 
     while (!glfwWindowShouldClose(this->glfwWindow)){
 
@@ -240,13 +244,7 @@ void Window::run(){
 
         // ui2dInventory.pump_input(this->glfwWindow);
 
-        inventory->pump_input(this->glfwWindow);
-
-        // ui2dQuickInventory.draw();
-        if(isInventoryOpen){
-            inventory->render();
-            // ui2dInventory.draw();
-        }
+        
 
         glfwPollEvents();
         glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -262,18 +260,27 @@ void Window::run(){
 
         glEnable(GL_DEPTH_TEST);
         this->curScene->render();
-
         
-        // ui2dQuickInventory.device_draw(WIDTH, HEIGHT, NK_ANTI_ALIASING_ON);
-        if(isInventoryOpen){
-            glfwSetInputMode(this->glfwWindow, GLFW_CURSOR , GLFW_CURSOR_NORMAL);
+        overlayScene->render();
 
-            inventory->device_draw(WIDTH, HEIGHT, NK_ANTI_ALIASING_ON);
-            // ui2dInventory.device_draw(WIDTH, HEIGHT, NK_ANTI_ALIASING_ON);
-        }else{
-            glfwSetInputMode(this->glfwWindow, GLFW_CURSOR , GLFW_CURSOR_DISABLED);
+        // inventory->pump_input(this->glfwWindow);
 
-        }
+        // // ui2dQuickInventory.draw();
+        // if(isInventoryOpen){
+        //     inventory->render();
+        //     // ui2dInventory.draw();
+        // }
+        
+        // // ui2dQuickInventory.device_draw(WIDTH, HEIGHT, NK_ANTI_ALIASING_ON);
+        // if(isInventoryOpen){
+        //     glfwSetInputMode(this->glfwWindow, GLFW_CURSOR , GLFW_CURSOR_NORMAL);
+
+        //     inventory->device_draw(WIDTH, HEIGHT, NK_ANTI_ALIASING_ON);
+        //     // ui2dInventory.device_draw(WIDTH, HEIGHT, NK_ANTI_ALIASING_ON);
+        // }else{
+        //     glfwSetInputMode(this->glfwWindow, GLFW_CURSOR , GLFW_CURSOR_DISABLED);
+
+        // }
 
         glfwSwapBuffers(this->glfwWindow);
     }

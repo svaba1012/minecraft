@@ -308,10 +308,6 @@ void GameUI2D::init(){
 
 
 
-
-
-
-
 void GameUI2D::render(){
     struct nk_context *ctx = &context;
     enum {EASY, HARD};

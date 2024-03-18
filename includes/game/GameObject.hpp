@@ -17,12 +17,12 @@
 #include "graphics/Shader.hpp"
 #include "Camera.hpp"
 #include "Light.hpp"
-// #include "Scene.hpp"
+#include "gameLib/Scene.hpp"
 
 
 using namespace std;
 
-class Scene;
+class OpenWorldScene;
 
 class GameObject{
 protected:
