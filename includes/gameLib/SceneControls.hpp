@@ -12,6 +12,8 @@
 #include "gameLib/ui/GameUI2D.hpp"
 #include "Window.hpp"
 #include "gameLib/inventory/InventoryUI.hpp"
+#include "minecraft/ui/QuickInventoryUI.hpp"
+#include "minecraft/ui/CharacterStatusUI.hpp"
 
 
 using namespace std;

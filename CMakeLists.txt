@@ -19,7 +19,7 @@ find_package(GLEW REQUIRED)
 
 project(minecraft)
 
-add_executable(minecraft ./src/main.cpp ./src/Window.cpp ./src/graphics/Shader.cpp ./src/Camera.cpp ./src/graphics/Mesh.cpp ./src/graphics/Texture.cpp ./src/Light.cpp ./src/game/GameObject.cpp  ./src/game/OpenWorldScene.cpp  ./src/game/Block.cpp ./src/game/Character.cpp ./src/game/BlockType.cpp ./includes/stb_image_resize.h ./includes/stb_image.h ./src/gameLib/ui/GameUI2D.cpp ./includes/gameLib/extern/nuklear.h ./src/minecraft/Item.cpp ./src/minecraft/ItemType.cpp ./src/gameLib/inventory/InventoryUI.cpp ./src/gameLib/inventory/Inventory.cpp  ./src/gameLib/inventory/InventoryItem.cpp ./src/minecraft/MinecraftInventoryItem.cpp ./src/gameLib/SceneControls.cpp )
+add_executable(minecraft ./src/main.cpp ./src/Window.cpp ./src/graphics/Shader.cpp ./src/Camera.cpp ./src/graphics/Mesh.cpp ./src/graphics/Texture.cpp ./src/Light.cpp ./src/game/GameObject.cpp  ./src/game/OpenWorldScene.cpp  ./src/game/Block.cpp ./src/game/Character.cpp ./src/game/BlockType.cpp ./includes/stb_image_resize.h ./includes/stb_image.h ./src/gameLib/ui/GameUI2D.cpp ./includes/gameLib/extern/nuklear.h ./src/minecraft/Item.cpp ./src/minecraft/ItemType.cpp ./src/gameLib/inventory/InventoryUI.cpp ./src/gameLib/inventory/Inventory.cpp  ./src/gameLib/inventory/InventoryItem.cpp ./src/minecraft/MinecraftInventoryItem.cpp ./src/gameLib/SceneControls.cpp ./src/minecraft/ui/QuickInventoryUI.cpp ./src/minecraft/ui/CharacterStatusUI.cpp)
 
 include_directories( ${GLEW_INCLUDE_DIRS} ./includes  )
 

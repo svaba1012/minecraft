@@ -22,8 +22,12 @@ void SceneControls::init(bool* keys, bool* mouseButtons){
     this->mouseButtons = mouseButtons;
 
     GameUI2D* inventory = new InventoryUI(Character::instance->inventory, 9);
+    GameUI2D* quickInventory = new QuickInventoryUI(Character::instance->inventory, 9);
+    GameUI2D* charaterStatus = new CharacterStatusUI();
 
     inventory->init(); 
+    quickInventory->init();
+    charaterStatus->init();
 
     
     MinecraftInventoryItem* testItem = new MinecraftInventoryItem(ItemType::getTypeById("diamond_sword"));
@@ -55,7 +59,8 @@ void SceneControls::init(bool* keys, bool* mouseButtons){
 
     activeUI = inventory;
     this->gameUIs.push_back(inventory);
-
+    this->gameUIs.push_back(quickInventory);
+    this->gameUIs.push_back(charaterStatus);
     
     this->shader->useShader();
 }
@@ -90,33 +95,26 @@ void SceneControls::render(){
 
         activeUI->pump_input(Window::window);
 
-        // ui2dQuickInventory.draw();
-        if(isInventoryOpen){
+        
             
             for(int i = 0; i < gameUIs.size(); i++){
-
-                gameUIs[i]->render();
+                if(isInventoryOpen || i > 0){
+                    gameUIs[i]->render();
+                }
             }
-        }
-            
-            // ui2dInventory.draw();
-        //}
-
         
-
         
-        // ui2dQuickInventory.device_draw(WIDTH, HEIGHT, NK_ANTI_ALIASING_ON);
-        // if(isInventoryOpen){
-            
-
+        
         if(isInventoryOpen){
             glfwSetInputMode(Window::window, GLFW_CURSOR , GLFW_CURSOR_NORMAL);
-            for(int i = 0; i < gameUIs.size(); i++){
-                gameUIs[i]->device_draw(WIDTH, HEIGHT, NK_ANTI_ALIASING_ON);
-            }
         }else{
             glfwSetInputMode(Window::window, GLFW_CURSOR , GLFW_CURSOR_DISABLED);
+        }
 
+        for(int i = 0; i < gameUIs.size(); i++){
+            if(isInventoryOpen || i > 0){
+                gameUIs[i]->device_draw(WIDTH, HEIGHT, NK_ANTI_ALIASING_ON);
+            }
         }
         
             
