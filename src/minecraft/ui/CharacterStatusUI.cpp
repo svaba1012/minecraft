@@ -34,10 +34,10 @@ void CharacterStatusUI::draw(struct nk_context* ctx){
     nk_style_push_color(ctx, &s->window.background, nk_rgba(0,0,0,0));
     nk_style_push_style_item(ctx, &s->window.fixed_background, nk_style_item_color(nk_rgba(0,0,0,0)));
     if (nk_begin(ctx, "CharStatus", nk_rect(xPos, yPos, 22 * ITEM_SIZE, 3.5 * ITEM_SIZE), NK_WINDOW_NO_SCROLLBAR)){
-        float armor = 5.5;
-        float health = 7.5;
-        float hunger = 3.5;
-        float expLvl = 18.1;
+        float armor = Character::instance->getArmor();
+        float health = Character::instance->health;
+        float hunger = Character::instance->hunger;
+        float expLvl = Character::instance->expLvl;
 
         struct nk_image imageArmorFull = icon_load2("./assets/extern_minecraft_assets/assets/minecraft/textures/gui/sprites/hud/armor_full.png");
         struct nk_image imageArmorHalf = icon_load2("./assets/extern_minecraft_assets/assets/minecraft/textures/gui/sprites/hud/armor_half.png");
@@ -45,16 +45,19 @@ void CharacterStatusUI::draw(struct nk_context* ctx){
         
         nk_layout_space_begin(ctx, NK_STATIC, ITEM_SIZE, INT_MAX);
         // nk_layout_row_static(ctx, ITEM_SIZE, ITEM_SIZE, ITEM_COUNT);
-        for(int i = 0; i < ITEM_COUNT; i++){
-            nk_layout_space_push(ctx, nk_rect(i * ITEM_SIZE,0,ITEM_SIZE,ITEM_SIZE));
-            if(armor - i >= 1){
-                nk_image(ctx, imageArmorFull);
-            }else if(armor - i > 0.1){
-                nk_image(ctx, imageArmorHalf);
-            }else{
-                nk_image(ctx, imageArmorEmpty);
+        if(armor > 0){
+            for(int i = 0; i < ITEM_COUNT; i++){
+                nk_layout_space_push(ctx, nk_rect(i * ITEM_SIZE,0,ITEM_SIZE,ITEM_SIZE));
+                if(armor - i >= 1){
+                    nk_image(ctx, imageArmorFull);
+                }else if(armor - i > 0.1){
+                    nk_image(ctx, imageArmorHalf);
+                }else{
+                    nk_image(ctx, imageArmorEmpty);
+                }
             }
         }
+        
         nk_layout_space_end(ctx);
         struct nk_image imageHealthFull = icon_load2("./assets/extern_minecraft_assets/assets/minecraft/textures/gui/sprites/hud/heart/full.png");
         struct nk_image imageHealthHalf = icon_load2("./assets/extern_minecraft_assets/assets/minecraft/textures/gui/sprites/hud/heart/half.png");

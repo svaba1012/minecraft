@@ -68,6 +68,7 @@ public:
     virtual void keyControl(bool* keys, GLfloat deltaTime) = 0;
     virtual void mouseControl(GLfloat xChange, GLfloat yChange) = 0;
     virtual void toogleOutline() = 0;
+    virtual void onKeys(int key, int code, int action, int mode);
     
     void draw(GLfloat scale, GLuint uniformModel);
 

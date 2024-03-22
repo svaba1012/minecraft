@@ -10,11 +10,61 @@ Character::Character(Scene *scene):GameObject(scene){
     this->isStatic = false;
     this->isCollideable = true;
     this->inventory = new Inventory(36);
+    this->protectionInventory = new Inventory(5);
+    this->health = 5.5;
+    this->armor = 0.0;
+    this->hunger = 10.0;
+    this->expLvl = 15.5;
     Character::instance = this;
 }
 
 Character::~Character(){
 }
+
+void Character::toogleControls(){
+    isControllable = !isControllable;
+}
+
+// enum ARMOR_TYPES = {ARMOR_TYPE_HELMET, ARMOR_TYPE_CHESTPLATE, ARMOR_TYPE_LEGGINS, ARMOR_TYPE_BOOTS};
+// enum ARMOR_MATERIAL = {LEATHER, GOLD, CHAINMAIL, IRON, DIAMOND, NETHERITE, TURTLE};
+#define ARMOR_MATERIAL_NUM 7
+#define ARMOR_TYPE_NUM 4
+
+char ARMOR_MATERIAL_STRINGS[ARMOR_MATERIAL_NUM][20] = {"leather", "golden",
+"chainmail", "iron", "diamond", "netherite", "turtle"};
+
+int ARMOR_PTS[ARMOR_MATERIAL_NUM][ARMOR_TYPE_NUM] = { 
+            //helmet, chestplate, leggins, boots
+                        {1, 3, 2, 1},   //leather
+                        {2, 5, 3, 1},   //gold
+                        {2, 5, 4, 1},   //chainmail
+                        {2, 6, 5, 2},   //iron
+                        {3, 8, 6, 3},   //diamond
+                        {3, 8, 6, 3},   //netherite
+                        {2, 0, 0, 0},   //turtle
+};
+
+float Character::getArmor(){
+    float armorSum = 0.0;
+    for(int i = 0; i < protectionInventory->itemSlots.size() - 1; i++){
+        MinecraftInventoryItem* minecraftItem = (MinecraftInventoryItem*) protectionInventory->itemSlots[i];
+        if(minecraftItem == NULL){
+            continue;
+        }
+        string itemIdStr = minecraftItem->itemType->getId();
+        int armorMaterialIndex = -1;
+        for(int j = 0; j < ARMOR_MATERIAL_NUM; j++){
+            bool match = itemIdStr.find(ARMOR_MATERIAL_STRINGS[j]) != std::string::npos;
+            if(match){
+                armorMaterialIndex = j;
+                break;
+            }
+        }
+        armorSum += ARMOR_PTS[armorMaterialIndex][i] / 2.0;
+    }
+    return armorSum;
+}
+
 
 void Character::toogleOutline(){
 
@@ -85,29 +135,49 @@ void Character::generateMeshes(){
     meshList->push_back(topMesh);
 }
 
+void Character::onKeys(int key, int code, int action, int mode){
+    if(action == GLFW_PRESS){
+        if(key == GLFW_KEY_E){
+            toogleControls();
+        }
+    }
+}
+
 void Character::keyControl(bool* keys, GLfloat deltaTime){
+    //!SHOULD NOT BE HERE
+        // if(hunger > 0.0){
+        //     hunger -= deltaTime / 10;
+        // }
+        if(hunger < 0.5){
+            health -= deltaTime;
+        }
+        if(hunger == 10.0 && health < 10.0){
+            health += deltaTime;
+        }
+
+
+    //!
+
     this->movementSpeed = 0.0;
     bool isMoving = false;
     glm::vec3 movementDirection = glm::vec3(0.0, 0.0, 0.0);
-    if(keys[GLFW_KEY_W]){
+    if(keys[GLFW_KEY_W] && isControllable){
         isMoving = true;
         movementDirection += this->front;
     }
-    if(keys[GLFW_KEY_S]){
+    if(keys[GLFW_KEY_S] && isControllable){
         isMoving = !isMoving;
         movementDirection -= this->front;
     }
-    if(keys[GLFW_KEY_D] && !keys[GLFW_KEY_A]){
+    if(keys[GLFW_KEY_D] && !keys[GLFW_KEY_A] && isControllable){
         isMoving = true;
         movementDirection += this->right;
     }
-    if(keys[GLFW_KEY_A] && !keys[GLFW_KEY_D]){
+    if(keys[GLFW_KEY_A] && !keys[GLFW_KEY_D] && isControllable){
         isMoving = true;
         movementDirection -= this->right;
     }
-    if(keys[GLFW_KEY_E]){
-        
-    }
+    
     if(isMoving){
         this->movementSpeed = 4.0;
         this->velocity = this->movementSpeed * glm::normalize(movementDirection);
@@ -119,20 +189,23 @@ void Character::keyControl(bool* keys, GLfloat deltaTime){
 }
 
 void Character:: mouseControl(GLfloat xChange, GLfloat yChange){
-    this->yawSpeed = 0.1;
-    this->pitchSpeed = 0.1;
-    // printf("Character yaw: %f\n",  yaw);
+    if(isControllable){
+        this->yawSpeed = 0.1;
+        this->pitchSpeed = 0.1;
+        // printf("Character yaw: %f\n",  yaw);
 
-    // glm::radians(yaw)
-    this->yaw += xChange * this->yawSpeed;
-    this->pitch -= yChange * this->pitchSpeed;
+        // glm::radians(yaw)
+        this->yaw += xChange * this->yawSpeed;
+        this->pitch -= yChange * this->pitchSpeed;
 
-    if(this->pitch > 89.0){
-        this->pitch = 89.0;
-    }else if( this->pitch < -89.0){
-        this->pitch = -89.0;
+        if(this->pitch > 89.0){
+            this->pitch = 89.0;
+        }else if( this->pitch < -89.0){
+            this->pitch = -89.0;
+        }
+        this->update();
     }
-    this->update();
+    
 }
 
 void Character::collectItem(Item* item){

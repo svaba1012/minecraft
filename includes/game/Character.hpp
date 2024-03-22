@@ -20,13 +20,26 @@ class Character: public GameObject{
 public:
     static Character* instance;
 
+    float health;
+    float armor;
+    float hunger;
+    float expLvl;
+
+    bool isControllable = true;
+
+    void toogleControls();
+
+    float getArmor();
+
     Inventory* inventory;
+    Inventory* protectionInventory;
     Character(Scene *scene);
     void toogleOutline();
     void generateMeshes();
     void keyControl(bool* keys, GLfloat deltaTime);
     void mouseControl(GLfloat xChange, GLfloat yChange);
     void collectItem(Item* item);
+    void onKeys(int key, int code, int action, int mode);
 
     ~Character();
 protected:

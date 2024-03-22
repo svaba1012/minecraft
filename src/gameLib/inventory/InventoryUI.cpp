@@ -7,7 +7,7 @@ using namespace std;
 
 #define CRAFTING_ITEM_SLOTS_NUM 4
 
-vector<InventoryItem*> protectionItemSlots;
+// vector<InventoryItem*> protectionItemSlots;
 vector<InventoryItem*> craftingItemSlots;
 InventoryItem* craftingResultItem;
 
@@ -19,10 +19,10 @@ InventoryItem* craftingResultItem;
 InventoryUI::InventoryUI(Inventory* inv, int numOfCols){
     this->inventory = inv;
     this->numOfCols = numOfCols;
-    protectionItemSlots.resize(PROTECTION_ITEM_SLOTS_NUM);
-    for(int i = 0; i < PROTECTION_ITEM_SLOTS_NUM; i++){
-        protectionItemSlots[i] = (InventoryItem*) NULL;
-    }
+    // protectionItemSlots.resize(PROTECTION_ITEM_SLOTS_NUM);
+    // for(int i = 0; i < PROTECTION_ITEM_SLOTS_NUM; i++){
+    //     protectionItemSlots[i] = (InventoryItem*) NULL;
+    // }
     craftingItemSlots.resize(CRAFTING_ITEM_SLOTS_NUM);
     for(int i = 0; i < CRAFTING_ITEM_SLOTS_NUM; i++){
         craftingItemSlots[i] = (InventoryItem*) NULL;
@@ -237,7 +237,7 @@ void InventoryUI::draw(struct nk_context* ctx){
 
             nk_layout_row_static(ctx, INVENTORY_ITEM_SIZE, INVENTORY_ITEM_SIZE, 1);
             for(int i = 0; i < PROTECTION_ITEM_SLOTS_NUM - 1; i++){
-                InventoryItem* curItem = protectionItemSlots[i];
+                InventoryItem* curItem = Character::instance->protectionInventory->itemSlots[i];
                 int itemCount = -1;
                 if(curItem != NULL){
                     image = icon_load(curItem->getItemIconFilePath());
@@ -246,12 +246,12 @@ void InventoryUI::draw(struct nk_context* ctx){
 
                 if(nk_widget_is_mouse_clicked(ctx, NK_BUTTON_LEFT)){
                     if(isArmorItemType(this->selectedItem, i)){
-                        this->itemBoxOnMouseLeftClick(&protectionItemSlots[i]);
+                        this->itemBoxOnMouseLeftClick(&Character::instance->protectionInventory->itemSlots[i]);
                     }
                 }
                 if(nk_widget_is_mouse_clicked(ctx, NK_BUTTON_RIGHT)){
                     if(isArmorItemType(this->selectedItem, i)){
-                        this->itemBoxOnMouseRightClick(&protectionItemSlots[i]);
+                        this->itemBoxOnMouseRightClick(&Character::instance->protectionInventory->itemSlots[i]);
                     }
                 }
                 inventory_box(ctx, image, itemCount);
@@ -277,7 +277,7 @@ void InventoryUI::draw(struct nk_context* ctx){
                 nk_group_end(ctx);
             }
 
-            InventoryItem* curItem = protectionItemSlots[4];
+            InventoryItem* curItem = Character::instance->protectionInventory->itemSlots[4];
                 int itemCount = -1;
                 if(curItem != NULL){
                     image = icon_load(curItem->getItemIconFilePath());
@@ -287,13 +287,13 @@ void InventoryUI::draw(struct nk_context* ctx){
                 if(nk_widget_is_mouse_clicked(ctx, NK_BUTTON_LEFT)){
                     // ! TRENUTNO JE HELMET CHANGE TO SHIELD
                     if(isArmorItemType(this->selectedItem, 0)){
-                        this->itemBoxOnMouseLeftClick(&protectionItemSlots[4]);
+                        this->itemBoxOnMouseLeftClick(&Character::instance->protectionInventory->itemSlots[4]);
                     }
                 }
                 if(nk_widget_is_mouse_clicked(ctx, NK_BUTTON_RIGHT)){
                     // ! TRENUTNO JE HELMET CHANGE TO SHIELD
                     if(isArmorItemType(this->selectedItem, 0)){
-                        this->itemBoxOnMouseRightClick(&protectionItemSlots[4]);
+                        this->itemBoxOnMouseRightClick(&Character::instance->protectionInventory->itemSlots[4]);
                     }
                 }
             inventory_box(ctx, image, itemCount);

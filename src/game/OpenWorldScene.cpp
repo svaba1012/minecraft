@@ -337,8 +337,9 @@ void OpenWorldScene::render(){
 }
 
 void OpenWorldScene::onKeys(int key, int code, int action, int mode){
-
-    
+    for(int i = 0; i < this->userControllableGameObjects.size(); i++){
+        userControllableGameObjects[i]->onKeys(key, code, action, mode);
+    }
 }
 
 OpenWorldScene::~OpenWorldScene()

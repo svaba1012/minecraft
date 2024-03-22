@@ -34,6 +34,11 @@ GameObject::GameObject(Scene* scene, glm::vec3 pos, glm::vec3 rotation, glm::vec
     this->isAffectedByGravity = false;
 }
 
+void GameObject::onKeys(int key, int code, int action, int mode){
+
+}
+
+
 void GameObject::setAffectedByGravity(bool isAffected){
     //non moveable objects can't be affected be gravity
     this->isAffectedByGravity = isAffected;
