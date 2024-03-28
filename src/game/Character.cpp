@@ -139,6 +139,24 @@ void Character::onKeys(int key, int code, int action, int mode){
     if(action == GLFW_PRESS){
         if(key == GLFW_KEY_E){
             toogleControls();
+        }else if(key == GLFW_KEY_1){
+            this->selectedItemId = 0;
+        }else if(key == GLFW_KEY_2){
+            this->selectedItemId = 1;
+        }else if(key == GLFW_KEY_3){
+            this->selectedItemId = 2;
+        }else if(key == GLFW_KEY_4){
+            this->selectedItemId = 3;
+        }else if(key == GLFW_KEY_5){
+            this->selectedItemId = 4;
+        }else if(key == GLFW_KEY_6){
+            this->selectedItemId = 5;
+        }else if(key == GLFW_KEY_7){
+            this->selectedItemId = 6;
+        }else if(key == GLFW_KEY_8){
+            this->selectedItemId = 7;
+        }else if(key == GLFW_KEY_9){
+            this->selectedItemId = 8;
         }
     }
 }

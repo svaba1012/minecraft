@@ -40,6 +40,11 @@ private:
     vector<GameObject*> userControllableGameObjects;
 
 public:
+
+    //!MOVE FROM HERE
+    bool isRightRelesed = true;
+    bool isHitting =  false;
+
     void addNewGameObject(GameObject* go);
     void addNewCollectable(Item* go);
     void removeCollectable(Item* go);

@@ -79,6 +79,7 @@ Texture* ItemType::makeTexture(string texturePath){
       char* fullTexturePathChar = new char[fullTexturePath.length() + 1];
       strcpy(fullTexturePathChar, fullTexturePath.c_str()); 
       this->iconFilePath = fullTexturePathChar;
+      printf("Ikonica za blok je: %s", this->iconFilePath);
     return new Texture(fullTexturePathChar);
 }
 

@@ -22,11 +22,11 @@ private:
     static map<string, int> idMap;
     Texture** textureList;
     ItemType();
-    int typeId;
-    string name;
     // string id;
     
 public:
+    int typeId;
+    string name;
     json itemData;
     bool isLoaded = false;
     map<string, int> variantMap;

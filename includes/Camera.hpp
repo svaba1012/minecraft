@@ -11,14 +11,15 @@
 
 #include "game/GameObject.hpp"
 
+
+
 using namespace std;
 
 class GameObject;
 
 class Camera{
     private:
-        glm::vec3 position;
-        glm::vec3 front;
+        
         glm::vec3 up;
         glm::vec3 right;
         glm::vec3 worldUp;
@@ -31,6 +32,8 @@ class Camera{
 
         void update();
     public:
+        glm::vec3 position;
+        glm::vec3 front;
         Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLfloat startPitch, GLfloat startMoveSpeed, GLfloat startTurnSpeed);
 
         void set(glm::vec3 position, glm::vec3 up, GLfloat yaw, GLfloat pitch);

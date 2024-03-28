@@ -27,12 +27,14 @@ public:
     Block(Scene* scene, glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale);
 
     void setType(string type, string variant);
+    void setType(string variant);
 
     void toogleOutline();
     void render(GLuint uniformModel, GLfloat deltaTime);
 
-
     
+    int getSideAimingAt(Camera* camera);
+    bool isAimedAt(Camera* camera);
 
     void generateMeshes();
     void keyControl(bool* keys, GLfloat deltaTime);

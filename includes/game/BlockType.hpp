@@ -16,6 +16,7 @@ private:
     static int typeNum;
     static BlockType* types;
     static map<string, int> nameMap;
+    static map<string, int> variantNameMap;
     Texture** textureList;
     BlockType(/* args */);
 
@@ -43,6 +44,7 @@ public:
 
     static void init();
     static BlockType* getTypeByName(string name);
+    static BlockType* getTypeByVariantName(string name);
     
     void loadData();
     Texture* getTexturesByVariantName(string variantName, int side);

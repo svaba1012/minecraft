@@ -33,6 +33,8 @@ public:
 
     Inventory* inventory;
     Inventory* protectionInventory;
+    int selectedItemId = 0;
+
     Character(Scene *scene);
     void toogleOutline();
     void generateMeshes();

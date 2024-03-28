@@ -32,6 +32,13 @@ void Block::setType(string type, string variant){
     this->type->loadData();
 }
 
+void Block::setType(string variant){
+    this->typeName = variant;
+    this->variantName = variant;
+    this->type = BlockType::getTypeByVariantName(variant);
+    this->type->loadData();
+}
+
 void Block::onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime){
 
     if(type == 0){ //hit
@@ -55,7 +62,50 @@ void Block::onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime){
             dropItem->generateMeshes();
             ((OpenWorldScene*)this->scene)->addNewCollectable(dropItem);
         }
-    }else if(type == 1){ // access
+    }else if(type == 1){ // access, right click
+        //check if type is accessible
+
+        //suppose that user is interacting
+        if(interactedBy == Character::instance){
+            int selectedItemId = Character::instance->selectedItemId;
+            MinecraftInventoryItem* itemInteractingWith = (MinecraftInventoryItem*)Character::instance->inventory->itemSlots[selectedItemId];
+            if(itemInteractingWith == NULL){
+                return;
+            }
+
+            if(itemInteractingWith->itemType->isBlock){
+                //placing blocks
+                // printf("Implement placing\n");
+
+                int side = getSideAimingAt(((OpenWorldScene*)this->scene)->camera);
+                
+                printf("Placing block on %d side\n", side);
+
+                float sign = side < 3 ? -1.0 : 1.0;
+
+                glm::vec3 sideVec = sign * glm::vec3( \
+                    side % 3 == 0, side % 3 == 1, side % 3 == 2);
+
+                Block* block = new Block(this->scene, this->pos + sideVec, glm::vec3(0.0, 0.0, 0.0) ,glm::vec3(1.0, 1.0, 1.0));
+                
+                cout << itemInteractingWith->itemType->name << endl;
+
+                block->setType(itemInteractingWith->itemType->name);
+                block->generateMeshes();
+                ((OpenWorldScene*)this->scene)->addNewGameObject(block);
+                int count = itemInteractingWith->getCount();
+                
+                if(count == 1){
+                    delete itemInteractingWith;
+                    Character::instance->inventory->setInventoryItem(NULL, selectedItemId);
+                    // itemInteractingWith = (MinecraftInventoryItem*) NULL;
+                }else{
+                    itemInteractingWith->setCount(--count);
+                }
+                
+            }
+        }
+
 
     }else if(type == 2){
         this->health = 1.0;
@@ -196,6 +246,75 @@ void Block::toogleOutline(){
     }
 }
 
+int Block::getSideAimingAt(Camera* camera){
+    glm::vec3 aimLineDot = camera->position;
+    glm::vec3 aimLineDirection = camera->front;
+    
+    aimLineDirection = glm::normalize(aimLineDirection);
+    bool hasOneIntersection = false;
+
+    float distance;
+    glm::vec3 intersection;
+    int side = -1;
+    
+    for(float dot = -0.5; dot <= 0.5; dot++){
+        glm::vec3 planeDot = glm::vec3(dot, dot, dot) + this->pos;
+        for(int unitVec = 0; unitVec < 3; unitVec++){
+            glm::vec3 planeNormal = glm::vec3(unitVec == 0, unitVec == 1, unitVec == 2);
+            
+            float planeNormalCrossLineAim = glm::dot(aimLineDirection, planeNormal);
+            if(planeNormalCrossLineAim == 0.0){
+                continue;
+            }
+            float d = glm::dot(planeDot - aimLineDot, planeNormal) / planeNormalCrossLineAim;
+            glm::vec3 tempIntersection = aimLineDot + d * aimLineDirection;
+            
+            glm::vec3 opositeDotSquareDiff = glm::vec3(unitVec != 0, unitVec != 1, unitVec != 2);
+            // printf("Plane normal %f, %f, %f\n", opositeDotSquareDiff.x, opositeDotSquareDiff.y, opositeDotSquareDiff.z);
+            glm::vec3 maxDotSquare;
+            glm::vec3 minDotSquare; 
+            if(dot > 0){
+                maxDotSquare = planeDot;
+                minDotSquare = planeDot - opositeDotSquareDiff; 
+            }else{
+                minDotSquare = planeDot;
+                maxDotSquare = planeDot + opositeDotSquareDiff;
+            }
+
+             
+            bool isWithinX =   (unitVec == 0) || \
+            (tempIntersection.x >= minDotSquare.x && tempIntersection.x <= maxDotSquare.x);
+            bool isWithinY =   (unitVec == 1) || \
+            (tempIntersection.y >= minDotSquare.y && tempIntersection.y <= maxDotSquare.y);
+            bool isWithinZ =   (unitVec == 2) || \
+            (tempIntersection.z >= minDotSquare.z && tempIntersection.z <= maxDotSquare.z);
+
+            if(isWithinX && isWithinY && isWithinZ){
+                if(!hasOneIntersection){
+                    intersection = tempIntersection;
+                    hasOneIntersection = true;
+                    side = (dot + 0.5) * 3 + unitVec;
+                    distance = d;
+                }else{
+                    float oldLen = glm::length(aimLineDot - intersection);
+                    float newLen = glm::length(aimLineDot - tempIntersection);
+                    if(d < distance){
+                        distance = d;
+                        intersection = tempIntersection;
+                        side = (dot + 0.5) * 3 + unitVec;
+                    }
+                }
+                
+            }
+            
+        }
+    }
+    return side;
+}
+
+bool Block::isAimedAt(Camera* camera){
+    return getSideAimingAt(camera) > 0;    
+}
 
 
 void Block::keyControl(bool* keys, GLfloat deltaTime){
@@ -207,5 +326,5 @@ void Block:: mouseControl(GLfloat xChange, GLfloat yChange){
 }
 
 Block::~Block(){
-    printf("Implement item dropping\n");
+    //printf("Implement item dropping\n");
 }

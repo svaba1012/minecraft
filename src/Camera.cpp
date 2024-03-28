@@ -127,10 +127,12 @@ GameObject* Camera::getObjectAimingAt(vector<GameObject*> objectList){
     vector<GameObject*> potentialObjects;
     GameObject* objectAimingAt = (GameObject*) NULL;
     GLfloat lowestDistance = 20.0;
+    glm::vec3 aimingAtVec;
     for(int i = 1; i < objectList.size(); i++){
         GameObject* curGo = objectList[i];
         glm::vec3 distanceVec = curGo->pos - this->position;
         GLfloat distance = glm::length(distanceVec);
+        glm::vec3 tempVec = glm::cross(this->front, distanceVec);
         GLfloat sinAngle = glm::length(glm::cross(this->front, distanceVec));
         GLfloat cosAngle = glm::dot(this->front, glm::normalize(distanceVec));
         // printf("Spec value: %f\n", sinAngle);
@@ -149,6 +151,8 @@ GameObject* Camera::getObjectAimingAt(vector<GameObject*> objectList){
         if(!isAimingAt){
             // potentialy aiming at
             // check if it is aiming
+            isAimingAt = (curGo)->isAimedAt(this);
+
             if(!isAimingAt){
                 continue;
             }
@@ -157,8 +161,11 @@ GameObject* Camera::getObjectAimingAt(vector<GameObject*> objectList){
         if(distance < lowestDistance){
             objectAimingAt = curGo;
             lowestDistance = distance;
+            aimingAtVec = tempVec;
         }
         
     }
+    //cout << "AIMING AT: " << aimingAtVec.x << "," << aimingAtVec.y << "," << aimingAtVec.z << endl;
+
     return objectAimingAt;
 }

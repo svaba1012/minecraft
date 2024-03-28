@@ -70,11 +70,22 @@ void InventoryUI::setSelectedItem(InventoryItem* item){
         height *= scale;
     }
 
+    unsigned char* imageBufferRGBA = imageBuffer;
+    if(bitDepth == 3){
+        imageBufferRGBA = new unsigned char[width * height  * 4];
+        for(int i = 0; i < width * height; i++){
+            imageBufferRGBA[4 * i] = imageBuffer[3 * i];
+            imageBufferRGBA[4 * i + 1] = imageBuffer[3 * i + 1];
+            imageBufferRGBA[4 * i + 2] = imageBuffer[3 * i + 2];
+            imageBufferRGBA[4 * i + 3] = 255;
+        }
+    }
+
 
     GLFWimage image;
     image.height = height;
     image.width = width;
-    image.pixels = imageBuffer;
+    image.pixels = imageBufferRGBA;
     GLFWcursor* cursor = glfwCreateCursor(&image, INVENTORY_ITEM_SIZE / 2, INVENTORY_ITEM_SIZE / 2);
 
 
@@ -98,7 +109,11 @@ struct nk_image icon_load(const char *filename){
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    if(n == 4){
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    }else{
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    }
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
     return nk_image_id((int)tex);

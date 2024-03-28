@@ -161,7 +161,7 @@ void OpenWorldScene::render(){
 
         // listen for user inputs
         
-        bool isHitting =  false;
+        
 
         
         for(int i = 0; i < this->userControllableGameObjects.size(); i++){
@@ -175,6 +175,8 @@ void OpenWorldScene::render(){
 
         // check for collisions
         int isColliding = 0;
+
+        
         
         for(int i = 0; i < this->gameObjects.size(); i++){
             GameObject* curGo = gameObjects[i];
@@ -282,6 +284,18 @@ void OpenWorldScene::render(){
                 // mouseButtons[0] = false;
             }
             
+        }
+
+        
+        
+        if(mouseButtons[1] && objectAimingAt && isRightRelesed){
+            userControllableGameObjects[0]->interactWithObject(objectAimingAt, 1, deltaTime);
+        }
+
+        if(mouseButtons[1]){
+            isRightRelesed = false;
+        }else{
+            isRightRelesed = true;
         }
         
         // this->camera->keyControl(this->getKeys(), deltaTime);

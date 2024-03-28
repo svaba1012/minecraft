@@ -110,6 +110,8 @@ void Window::createCallbacks(){
     glfwSetKeyCallback(this->glfwWindow, handleKeys);
     glfwSetMouseButtonCallback(this->glfwWindow, handleMouseButtons);
     glfwSetCursorPosCallback(this->glfwWindow, handleMouse);
+    glfwSetScrollCallback(this->glfwWindow, handleMouseScroll);
+    
 }
 
 
@@ -167,6 +169,15 @@ void Window::handleMouseButtons(GLFWwindow* window, int button, int action, int 
             theWindow->mouseButtons[button] = false;
         }
     }
+    // printf("Mouse pressed\n");
+    
+}
+
+void Window::handleMouseScroll(GLFWwindow* window, double xoffset, double yoffset){
+    Window* theWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+
+    // !NOT WORKING
+    printf("Scroll: %lf ; %lf\n", xoffset, yoffset);
     
 }
 

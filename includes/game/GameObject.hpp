@@ -23,6 +23,7 @@
 using namespace std;
 
 class OpenWorldScene;
+class Camera;
 
 class GameObject{
 protected:
@@ -87,6 +88,8 @@ public:
     void interactWithObject(GameObject* go, int type, GLfloat deltaTime);
 
     void setAffectedByGravity(bool isAffected);
+
+    virtual bool isAimedAt(Camera* camera);
     
     
     

@@ -6,6 +6,7 @@ int BlockType::typeNum;
 
 BlockType* BlockType::types;
 map<string, int> BlockType::nameMap;
+map<string, int> BlockType::variantNameMap;
 
 void BlockType::init(){
     std::ifstream f("./assets/custom_minecraft/blocklist.json");
@@ -14,8 +15,24 @@ void BlockType::init(){
     BlockType::typeNum = blocksData.size();
     BlockType::types = new BlockType[typeNum];
     for(int i = 0; i < BlockType::typeNum; i++){
-        BlockType::types[i].blockData = blocksData.at(i);
+        BlockType* curType = &BlockType::types[i];
+        curType->blockData = blocksData.at(i);
         BlockType::nameMap.insert({(string) blocksData.at(i).at("block"), i});
+        curType->variantNum = curType->blockData.at("variants").size();
+        curType->variants = new string[curType->variantNum];
+
+        if(curType->variantNum == 1){
+            string variantName = (string) curType->blockData.at("variants");
+            curType->variants[0] = variantName;
+            BlockType::variantNameMap.insert({variantName, i});    
+        }else{
+            for(int j = 0; j < curType->variantNum; j++){
+                string variantName = (string) curType->blockData.at("variants").at(j);
+                curType->variants[j] = variantName;
+                
+                BlockType::variantNameMap.insert({variantName, i});    
+            }
+        }
     }
 }
 
@@ -25,6 +42,14 @@ BlockType* BlockType::getTypeByName(string name){
     // printf("Proba JSON alo %f\n", (float)BlockType::types[index].blockData.at("hardness"));
     return &BlockType::types[index];
 }
+
+BlockType* BlockType::getTypeByVariantName(string name){
+    int index = BlockType::variantNameMap[name]; 
+    // printf("Proba JSON aloo %d\n", index);
+    // printf("Proba JSON alo %f\n", (float)BlockType::types[index].blockData.at("hardness"));
+    return &BlockType::types[index];
+}
+
 
 Texture* makeTexture(string texturePath){
 // primer putanje do teksture
@@ -47,6 +72,8 @@ Texture* makeTexture(string texturePath){
 bool BlockType::readJsonBool(char* fieldName){
     return (bool) (((string) this->blockData.at(fieldName)).compare("Yes") == 0);
 }
+
+
 
 
 void BlockType::loadData(){
@@ -140,12 +167,6 @@ void BlockType::loadData(){
             blockTexture->loadTexture();
             this->textureList[i * TEXTURE_NUM_PER_BLOCK + 2] = blockTexture;
         }
-
-         
-
-            
-
-            
     }
 }
 

@@ -113,7 +113,7 @@ int GameObject::isCollidingWith(GameObject* anotherObject, GLfloat deltaTime){
         isAxisCollision = false;
     }
     if(isAxisCollision){
-        printf("Collision x detected\n");
+        //printf("Collision x detected\n");
         return 1; //1
     }
 
@@ -138,7 +138,7 @@ int GameObject::isCollidingWith(GameObject* anotherObject, GLfloat deltaTime){
         isAxisCollision = false;
     }
     if(isAxisCollision){
-        printf("Collision y detected\n");
+        //printf("Collision y detected\n");
         return 2; //2
     }
 
@@ -163,7 +163,7 @@ int GameObject::isCollidingWith(GameObject* anotherObject, GLfloat deltaTime){
         isAxisCollision = false;
     }
     if(isAxisCollision){
-        printf("Collision z detected\n");
+        //printf("Collision z detected\n");
         return 3; //3
     }
 
@@ -283,7 +283,9 @@ void GameObject::render(GLuint uniformModel, GLfloat deltaTime){
     
 // }
 
-
+bool GameObject::isAimedAt(Camera* camera){
+    return false;
+}
 
 void GameObject::interactWithObject(GameObject* go, int type, GLfloat deltaTime){
     go->onInteracted(this, type, deltaTime);

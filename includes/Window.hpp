@@ -41,6 +41,7 @@ private:
     bool mouseButtons[3];
     static void handleKeys(GLFWwindow* window, int key, int code, int action, int mode);
     static void handleMouseButtons(GLFWwindow* window, int button, int action, int mods);
+    static void handleMouseScroll(GLFWwindow* window, double xoffset, double yoffset);
 
     
 public:

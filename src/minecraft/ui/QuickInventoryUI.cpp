@@ -77,7 +77,11 @@ struct nk_image icon_load1(const char *filename){
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+     if(n == 4){
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    }else{
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    }
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
     return nk_image_id((int)tex);
@@ -89,15 +93,25 @@ void inventory_box1( struct nk_context *ctx, struct nk_image image, int count){
     // const int INVENTORY_ITEM_SIZE = 50;
     struct nk_style_window old_style = ctx->style.window;
     ctx->style.window.group_padding = nk_vec2(0,0);
+    
+    
+   
+
+    struct nk_style *s = &ctx->style;     
+    nk_style_push_color(ctx, &s->window.background, nk_rgba(50,50,50,150));
+    nk_style_push_style_item(ctx, &s->window.fixed_background, nk_style_item_color(nk_rgba(50,50,50,150)));
+    
     float rowWidths[2] = {40, 20};
-    if (nk_group_begin(ctx, "Group", NK_WINDOW_BORDER | NK_WINDOW_NO_SCROLLBAR)) {
+    if (nk_group_begin(ctx, "QuickInvItem", NK_WINDOW_BORDER | NK_WINDOW_NO_SCROLLBAR)) {
         // nk_layout_row_dynamic(ctx, 50, 2);
         // nk_layout_row_static(ctx, 50, 50, 2);
+        
         nk_layout_space_begin(ctx, NK_STATIC, 50, INT_MAX);
         nk_layout_space_push(ctx, nk_rect(0,0,50,50));
 
         // nk_layout_row(ctx, NK_STATIC, INVENTORY_ITEM_SIZE, 2, rowWidths);
-        if (nk_group_begin(ctx, "GroupImage",  NK_WINDOW_NO_SCROLLBAR)) {
+        
+        if (nk_group_begin(ctx, "GroupImage1",  NK_WINDOW_NO_SCROLLBAR)) {
             nk_layout_row_static(ctx, 50, 50, 1);
             
             if(count > -1){
@@ -107,21 +121,34 @@ void inventory_box1( struct nk_context *ctx, struct nk_image image, int count){
         }
         if(count > 1){
             nk_layout_space_push(ctx, nk_rect(30,30,15,15));
-            if (nk_group_begin(ctx, "GroupCount",  NK_WINDOW_NO_SCROLLBAR)) {
+            struct nk_style *sl = &ctx->style;
+        nk_style_push_color(ctx, &sl->window.background, nk_rgba(0,0,0,0));
+        nk_style_push_style_item(ctx, &sl->window.fixed_background, nk_style_item_color(nk_rgba(0,0,0,0)));
+            if (nk_group_begin(ctx, "GroupCount1",  NK_WINDOW_NO_SCROLLBAR)) {
                 nk_layout_row_static(ctx, 15, 15, 1);
                 
                     char countStr[10];
                     sprintf(countStr, "%d", count);
                     nk_label(ctx, countStr, NK_TEXT_RIGHT);
+                    nk_style_pop_color(ctx);
+                    nk_style_pop_style_item(ctx);
                 nk_group_end(ctx);
             }
         }
         nk_layout_space_end(ctx);
+        nk_style_pop_color(ctx);
+        nk_style_pop_style_item(ctx);
         ctx->style.window.group_padding = nk_vec2(0,0);
+        // ctx->style.window = old_style; 
         // nk_image(ctx, image);
         
         nk_group_end(ctx);
+        
+        
     }
+
+    
+    
     // ctx->style.window = old_style;
 }
 
@@ -201,7 +228,11 @@ void inventory_box1( struct nk_context *ctx, struct nk_image image, int count){
 void QuickInventoryUI::draw(struct nk_context* ctx){
     // const int INVENTORY_ITEM_SIZE = 50;
     const int xPos = 130, yPos = 530;
-    if (nk_begin(ctx, "QuickInventory", nk_rect(xPos, yPos, 9.9 * INVENTORY_ITEM_SIZE, 1.25 * INVENTORY_ITEM_SIZE), NK_WINDOW_BORDER | NK_WINDOW_NO_SCROLLBAR)){
+    struct nk_style *s = &ctx->style;
+    nk_style_push_color(ctx, &s->window.background, nk_rgba(0,0,0,0));
+    nk_style_push_style_item(ctx, &s->window.fixed_background, nk_style_item_color(nk_rgba(0,0,0,0)));
+    
+    if (nk_begin(ctx, "QuickInventory", nk_rect(xPos, yPos, 9.9 * INVENTORY_ITEM_SIZE, 1.25 * INVENTORY_ITEM_SIZE), NK_WINDOW_NO_SCROLLBAR)){
         struct nk_image image = icon_load1("./assets/extern_minecraft_assets/assets/minecraft/textures/item/diamond_sword.png");
         
         nk_layout_row_static(ctx, INVENTORY_ITEM_SIZE, INVENTORY_ITEM_SIZE, this->numOfItems);
@@ -219,11 +250,25 @@ void QuickInventoryUI::draw(struct nk_context* ctx){
             // if(nk_widget_is_mouse_clicked(ctx, NK_BUTTON_RIGHT)){
             //     this->itemBoxOnMouseRightClick(&this->inventory->itemSlots[i]);
             // }
-
-            inventory_box1(ctx, image, itemCount);
+            
+            // if(i == 0){
+                // ctx->style.window.group_border = 3.0;
+                if(i == Character::instance->selectedItemId){
+                    //! TODO Make better styles
+                    ctx->style.window.group_border = 5.0;
+                    ctx->style.window.group_padding = nk_vec2(0, 0);
+                }
+                inventory_box1(ctx, image, itemCount);
+            // }
+             ctx->style.window.group_border = 1.0;
         }
     }
+    nk_style_pop_color(ctx);
+    nk_style_pop_style_item(ctx);
+    
     nk_end(ctx);
+            
+
 }
 
 
