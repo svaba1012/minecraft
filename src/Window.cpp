@@ -22,6 +22,7 @@ Window::Window(){
     
     BlockType::init();
     ItemType::init();
+    
 
     BlockType::getTypeByName("Ancient Debris");
     

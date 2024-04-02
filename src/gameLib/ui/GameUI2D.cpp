@@ -95,7 +95,7 @@ void GameUI2D::device_init(GLFWwindow *win){
     // glGetAttribLocation(dev->prog, "TexCoord");
     dev->attrib_col = dev->shader->getAttribLocation("Color");
     // glGetAttribLocation(dev->prog, "Color");
-    printf("%d\n", dev->attrib_col);
+    //printf("%d\n", dev->attrib_col);
 
     {
         /* buffer setup */

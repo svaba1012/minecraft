@@ -79,7 +79,7 @@ Texture* ItemType::makeTexture(string texturePath){
       char* fullTexturePathChar = new char[fullTexturePath.length() + 1];
       strcpy(fullTexturePathChar, fullTexturePath.c_str()); 
       this->iconFilePath = fullTexturePathChar;
-      printf("Ikonica za blok je: %s", this->iconFilePath);
+    //   printf("Ikonica za blok je: %s", this->iconFilePath);
     return new Texture(fullTexturePathChar);
 }
 
@@ -187,11 +187,14 @@ void ItemType::loadData(){
     tempJson = this->itemData.at("breaking_speed");
     if(tempJson.is_number() && !tempJson.contains("By default")){
         this->breaking_speed = (float) tempJson; 
-    }else{
+    }else if(tempJson.contains("By default")) {
         this->breaking_speed = (float) (tempJson.at("By default"));
+    }else{
+        this->breaking_speed = 1.5;
+        printf("Braking speed implement better one later\n");
     }
     
-
+    
     this->textureList = new Texture*[TEXTURE_NUM_PER_BLOCK];
     
         
@@ -219,6 +222,10 @@ void ItemType::loadData(){
         }
         if (this->isBlock){
             std::ifstream f1("./assets/extern_minecraft_assets/assets/minecraft/models/block/" + this->id + ".json");
+            if(f1.fail()){
+                printf("Unsupported texture, fix later\n");
+                return;
+            }
             itemModel = json::parse(f1);
             this->isBlock = true;
             json itemTexturesJSON = itemModel.at("textures");

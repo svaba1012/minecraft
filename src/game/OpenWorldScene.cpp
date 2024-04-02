@@ -14,10 +14,11 @@ OpenWorldScene::OpenWorldScene(){
     
 
     this->camera = new Camera(glm::vec3(2.5, 2.8, 2.5), glm::vec3(0.0, 1.0, 0.0), 0.0, 0.0, 5.0, 1.0);
+    
 }
 
 void OpenWorldScene::init(bool* keys, bool* mouseButtons){
-    
+    Recipe::loadRecipes();
     this->time = 0.0;
     this->keys = keys;
     this->mouseButtons = mouseButtons;
@@ -161,8 +162,13 @@ void OpenWorldScene::render(){
 
         // listen for user inputs
         
-        
+        ItemType* diamondItem = ItemType::getTypeById("diamond");
+        ItemType* stickItem = ItemType::getTypeById("stick");
+        ItemType* goldItem = ItemType::getTypeById("gold_ingot");
+        ItemType* oakLog = ItemType::getTypeById("oak_planks");
 
+        ItemType* pattern[3][3] = {{NULL, NULL, NULL}, {NULL, goldItem,  NULL}, {NULL, NULL, goldItem}};
+        Recipe::craftItem(pattern);
         
         for(int i = 0; i < this->userControllableGameObjects.size(); i++){
             this->userControllableGameObjects[i]->keyControl(this->getKeys(), deltaTime);

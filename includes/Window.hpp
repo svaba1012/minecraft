@@ -17,6 +17,7 @@
 #include "game/OpenWorldScene.hpp"
 #include "gameLib/SceneControls.hpp"
 #include "gameLib/ui/GameUI2D.hpp"
+#include "minecraft/Recipe.hpp"
 
 using namespace std;
 

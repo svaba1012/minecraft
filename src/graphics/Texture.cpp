@@ -27,7 +27,7 @@ void Texture::loadTexture(GLuint textureSlot){
     this->textureSlot = textureSlot;
     unsigned char* textureData = stbi_load(this->fileLocation, &width, &height, &bitDepth, 0);
 
-    cout<< bitDepth << endl;
+    //cout<< bitDepth << endl;
 
     // ! resize image but make them blury
     // assume is divisible by 4
