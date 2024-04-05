@@ -5,7 +5,9 @@
 #include "gameLib/inventory/InventoryItem.hpp"
 #include "gameLib/inventory/Inventory.hpp"
 #include "minecraft/MinecraftInventoryItem.hpp"
+// #include "minecraft/Recipe.hpp"
 #include "Window.hpp"
+
 
 
 using namespace std;
@@ -29,6 +31,15 @@ public:
 
     void itemBoxOnMouseLeftClick(InventoryItem** ptrSlotItem );
     void itemBoxOnMouseRightClick(InventoryItem** ptrSlotItem );
+
+    void searchRecipes();
+    void consumeIngredients();
+
+
+    void drawCharacterInfo(struct nk_context* ctx);
+    void drawChestInventoryUI(struct nk_context* ctx);
+    void drawCraftingTableUI(struct nk_context* ctx);
+    void drawFurnaceUI(struct nk_context* ctx);
 
     void draw(struct nk_context* ctx);
 

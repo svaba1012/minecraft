@@ -42,9 +42,13 @@ void SceneControls::init(bool* keys, bool* mouseButtons){
 
     MinecraftInventoryItem* testItem4 = new MinecraftInventoryItem(ItemType::getTypeById("iron_helmet"));
 
-    MinecraftInventoryItem* testItem5 = new MinecraftInventoryItem(ItemType::getTypeById("golden_chestplate"));
+    MinecraftInventoryItem* testItem5 = new MinecraftInventoryItem(ItemType::getTypeById("stick"));
 
-    MinecraftInventoryItem* testItem6 = new MinecraftInventoryItem(ItemType::getTypeById("apple"));
+    testItem5->setCount(30);
+
+    MinecraftInventoryItem* testItem6 = new MinecraftInventoryItem(ItemType::getTypeById("gold_ingot"));
+    testItem6->setCount(10);
+
     MinecraftInventoryItem* testItem7 = new MinecraftInventoryItem(ItemType::getTypeById("apple"));
 
 

@@ -171,6 +171,10 @@ ItemType* Recipe::craftItemShapeless(vector<ItemType*> inShapeless){
 ItemType* Recipe::craftItem(ItemType* inPattern[3][3]){
     vector<ItemType*> inIngredients;
     vector<ItemType*> inIngredientsShapeless;
+
+    ItemType* inPatternShifted[3][3] = {    {NULL, NULL, NULL}, \
+                                            {NULL, NULL, NULL}, \
+                                            {NULL, NULL, NULL}, };
     int emptyRowCount[3] = {0, 0};
     int emptyColCount[3] = {0, 0};
     printf("Entering the void\n");
@@ -189,6 +193,7 @@ ItemType* Recipe::craftItem(ItemType* inPattern[3][3]){
                 }
             }
             if(!alreadyHasThatIngredient){
+                printf("Ingredient found\n");
                 inIngredients.push_back(inPattern[i][j]);
             }
             inIngredientsShapeless.push_back(inPattern[i][j]);
@@ -198,22 +203,21 @@ ItemType* Recipe::craftItem(ItemType* inPattern[3][3]){
     rowShift += (rowShift && (emptyRowCount[1] == 3));
     int colShift = (emptyColCount[0] == 3);
     colShift += (colShift && (emptyColCount[1] == 3));
-    if(rowShift + colShift > 0){
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                if(i < 3 - rowShift){
-                    inPattern[i][j] = inPattern[i + rowShift][j];
-                }else{
-                    inPattern[i][j] = NULL;
-                }
-                if(j < 3 - colShift){
-                    inPattern[i][j] = inPattern[i][j + colShift];
-                }else{
-                    inPattern[i][j] = NULL;
-                }
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 3; j++){
+            if(i < 3 - rowShift){
+                inPatternShifted[i][j] = inPattern[i + rowShift][j];
+            }else{
+                inPatternShifted[i][j] = NULL;
+            }
+            if(j < 3 - colShift){
+                inPatternShifted[i][j] = inPattern[i][j + colShift];
+            }else{
+                inPatternShifted[i][j] = NULL;
             }
         }
     }
+    
     
 
     printf("Extracted ingredients\n");
@@ -237,7 +241,10 @@ ItemType* Recipe::craftItem(ItemType* inPattern[3][3]){
         printf("Iterating through recepies\n");
         for(int k = 0; k < 3; k++){
             for(int j = 0; j < 3; j++){
-                if(inPattern[k][j] != curRecipe->pattern[k][j]){
+                if(inPatternShifted[k][j] != NULL){
+                    printf("Patern ima [%d][%d]", k, j);
+                }
+                if(inPatternShifted[k][j] != curRecipe->pattern[k][j]){
                     isMatched = false;
                     break;
                 }
