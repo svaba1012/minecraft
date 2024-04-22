@@ -2,6 +2,8 @@
 
 RecipeBranch* Recipe::rootRecipeBranch;
 RecipeBranch* Recipe::rootRecipeBranchShapeless;
+map<ItemType*, ItemType*> Recipe::smeltRecipeMap;
+
 
 Recipe::Recipe(){
 
@@ -35,7 +37,7 @@ void Recipe::init(string filename){
     cout << typeStr << endl;
     if(typeStr.find("crafting_shaped") != std::string::npos){
         // printf("Type is crafting...\n");
-        cout << "Initialising recipe for " <<  filename << endl;
+        // cout << "Initialising recipe for " <<  filename << endl;
         type = CRAFT_RECIPE_TYPE_SHAPED;
         json itemKeys = jsonRecipe.at("key");
         json patternJson = jsonRecipe.at("pattern");
@@ -67,12 +69,16 @@ void Recipe::init(string filename){
                     tempStr[0] = currentRow[j];
                     tempStr[1] = '\0';
                     if(!itemKeys.at(tempStr).contains("item")){
-                        printf("Unsupported recipe with tags... Fix later\n");
+                        json tempTag = itemKeys.at(tempStr); 
+                        if(tempTag.contains("tag") && ((string)tempTag.at("tag")).compare("minecraft:planks") != 0){
+                            // printf("Unsupported recipe with tags... Fix later\n");
+                            // cout << "Tag: " << (string)itemKeys.at(tempStr).at("tag") << endl;
+                        }
                         return;
                     }
                     string ingredientTypeStr = (string)itemKeys.at(tempStr).at("item");
                     ingredientTypeStr = ingredientTypeStr.substr(10, ingredientTypeStr.length());
-                    cout << "INGREDIENT TYPE: " << ingredientTypeStr << " IN char: " <<currentRow[j] << endl;
+                    // cout << "INGREDIENT TYPE: " << ingredientTypeStr << " IN char: " <<currentRow[j] << endl;
                     // printf("Temp text\n");
                     ItemType* newIngredient = ItemType::getTypeById(ingredientTypeStr);
                     ingredientsChar.insert({currentRow[j], newIngredient});
@@ -93,7 +99,7 @@ void Recipe::init(string filename){
         string resultItemStr = (string)resultJson.at("item");
         resultItemStr = resultItemStr.substr(10, resultItemStr.length());
         resultingItem = ItemType::getTypeById(resultItemStr);
-        printf("Init result item finished...\n");
+        // printf("Init result item finished...\n");
         if(resultJson.contains("count")){
             resultingItemCount = (int) resultJson.at("count");    
         }else{
@@ -101,20 +107,46 @@ void Recipe::init(string filename){
         }
     }else if(typeStr.find("smelting") != std::string::npos){
         //printf("Type is smelting...\n");
+        cout << "Initialising smelt recipe for " <<  filename << endl;
+
         type = COOK_RECIPE_TYPE;
+        json ingredientsJson = jsonRecipe.at("ingredient");
+        if(ingredientsJson.contains("tag")){
+            printf("Unsupported recipe with tags... Fix later\n");
+            return;
+        }
+        vector<string> ingrsStr;
+        if(ingredientsJson.size() == 1){
+            ingrsStr.push_back((string) ingredientsJson.at("item"));
+        }else{
+            for(int i = 0; i < ingredientsJson.size(); i++){
+                ingrsStr.push_back((string) ingredientsJson.at(i).at("item"));
+            }
+        }
+        string resultItemStr = (string)jsonRecipe.at("result");
+        resultItemStr = resultItemStr.substr(10, resultItemStr.length());
+        ItemType* resultingItem = ItemType::getTypeById(resultItemStr);
+        for(int i = 0; i < ingrsStr.size(); i++){
+            string ingredientStr = ingrsStr[i];
+            // ingredientStr = (string) ingredientsJson.at("item");
+            ingredientStr = ingredientStr.substr(10, ingredientStr.length());
+            ItemType* ingredientType = ItemType::getTypeById(ingredientStr);
+            Recipe::smeltRecipeMap.insert({ingredientType, resultingItem});
+        }
+
     }else if(typeStr.find("crafting_shapeless") != std::string::npos){
-        printf("Crafting 2x2\n");
+        // printf("Crafting 2x2\n");
         type = CRAFT_RECIPE_TYPE_SHAPELESS;
         json ingredientsJson = jsonRecipe.at("ingredients");
         RecipeBranch* curRecipeBranch = Recipe::rootRecipeBranchShapeless;
         for(int i = 0; i < ingredientsJson.size(); i++){
             if(!ingredientsJson.at(i).contains("item")){
-                printf("Unsupported recipe with tags... Fix later\n");
+                // printf("Unsupported recipe with tags... Fix later\n");
                 return;
             }
             string ingredientTypeStr = (string)ingredientsJson.at(i).at("item");
             ingredientTypeStr = ingredientTypeStr.substr(10, ingredientTypeStr.length());
-            cout << "INGREDIENT TYPE: " << ingredientTypeStr  << endl;
+            // cout << "INGREDIENT TYPE: " << ingredientTypeStr  << endl;
             ItemType* newIngredient = ItemType::getTypeById(ingredientTypeStr);
             ingridients.push_back(newIngredient);
         }
@@ -132,7 +164,7 @@ void Recipe::init(string filename){
         string resultItemStr = (string)resultJson.at("item");
         resultItemStr = resultItemStr.substr(10, resultItemStr.length());
         resultingItem = ItemType::getTypeById(resultItemStr);
-        printf("Init result item finished...\n");
+        // printf("Init result item finished...\n");
         if(resultJson.contains("count")){
             resultingItemCount = (int) resultJson.at("count");    
         }else{
@@ -151,18 +183,18 @@ ItemType* Recipe::craftItemShapeless(vector<ItemType*> inShapeless){
             curRecipeBranch = curRecipeBranch->recipeMap.at(inShapeless[i]);
         }
         catch (std::out_of_range&  e){
-            printf("No recipe for that pattern \n");
+            // printf("No recipe for that pattern \n");
             return NULL;
         }
-        printf("Search through hash tree shapeless %d\n", curRecipeBranch);
+        // printf("Search through hash tree shapeless %d\n", curRecipeBranch);
     }
     for(int i = 0; i < curRecipeBranch->recipes.size(); i++){
         Recipe* curRecipe = curRecipeBranch->recipes[i];
         if(curRecipe->type == CRAFT_RECIPE_TYPE_SHAPELESS){
-             printf("Found recipe %s\n", curRecipeBranch->recipes[i]->resultingItem->iconFilePath);
+            //  printf("Found recipe %s\n", curRecipeBranch->recipes[i]->resultingItem->iconFilePath);
             return curRecipeBranch->recipes[i]->resultingItem;
         }else{
-            printf("Zasto ima vise shapeless sa istim ingr...\n");
+            // printf("Zasto ima vise shapeless sa istim ingr...\n");
         }
     }
     return NULL;
@@ -177,7 +209,7 @@ ItemType* Recipe::craftItem(ItemType* inPattern[3][3]){
                                             {NULL, NULL, NULL}, };
     int emptyRowCount[3] = {0, 0};
     int emptyColCount[3] = {0, 0};
-    printf("Entering the void\n");
+    // printf("Entering the void\n");
     for(int i = 0; i < 3; i++){
         for(int j = 0; j < 3; j++){
             bool alreadyHasThatIngredient = false;
@@ -193,7 +225,7 @@ ItemType* Recipe::craftItem(ItemType* inPattern[3][3]){
                 }
             }
             if(!alreadyHasThatIngredient){
-                printf("Ingredient found\n");
+                // printf("Ingredient found\n");
                 inIngredients.push_back(inPattern[i][j]);
             }
             inIngredientsShapeless.push_back(inPattern[i][j]);
@@ -220,7 +252,7 @@ ItemType* Recipe::craftItem(ItemType* inPattern[3][3]){
     
     
 
-    printf("Extracted ingredients\n");
+    // printf("Extracted ingredients\n");
     RecipeBranch* curRecipeBranch = Recipe::rootRecipeBranch; 
     for(int i = 0; i < inIngredients.size(); i++){
         try{
@@ -231,18 +263,18 @@ ItemType* Recipe::craftItem(ItemType* inPattern[3][3]){
             return craftItemShapeless(inIngredientsShapeless);
         }
         
-        printf("Search through hash tree %d\n", curRecipeBranch);
+        // printf("Search through hash tree %d\n", curRecipeBranch);
     }
     for(int i = 0; i < curRecipeBranch->recipes.size(); i++){
-        printf("PROBA\n");
+        // printf("PROBA\n");
         Recipe* curRecipe = curRecipeBranch->recipes[i];
         
         bool isMatched = true;
-        printf("Iterating through recepies\n");
+        // printf("Iterating through recepies\n");
         for(int k = 0; k < 3; k++){
             for(int j = 0; j < 3; j++){
                 if(inPatternShifted[k][j] != NULL){
-                    printf("Patern ima [%d][%d]", k, j);
+                    // printf("Patern ima [%d][%d]", k, j);
                 }
                 if(inPatternShifted[k][j] != curRecipe->pattern[k][j]){
                     isMatched = false;
@@ -254,14 +286,22 @@ ItemType* Recipe::craftItem(ItemType* inPattern[3][3]){
             }
         }
         if(isMatched){
-            printf("Found recipe %s\n", curRecipeBranch->recipes[i]->resultingItem->iconFilePath);
+            // printf("Found recipe %s\n", curRecipeBranch->recipes[i]->resultingItem->iconFilePath);
             return curRecipeBranch->recipes[i]->resultingItem;
         }
     }
     return craftItemShapeless(inIngredientsShapeless);
-
 }
     //make more methods for other types of recepies...
-ItemType* smeltItem(ItemType* inItem){
+ItemType* Recipe::smeltItem(ItemType* inItem){
+    ItemType* result;
+    try{
+        result = Recipe::smeltRecipeMap.at(inItem);
+        return result;
+    }
+    catch (std::out_of_range&  e){
+        std::cerr << e.what() << std::endl;
+        return NULL;
+    }
     return NULL;
 }

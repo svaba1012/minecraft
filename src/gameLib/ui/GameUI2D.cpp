@@ -297,7 +297,7 @@ void GameUI2D::init(){
     struct nk_font *font;
     nk_font_atlas_init_default(&atlas);
     nk_font_atlas_begin(&atlas);
-    font = nk_font_atlas_add_default(&atlas, 13, 0);
+    font = nk_font_atlas_add_default(&atlas, 20, 0);
     image = nk_font_atlas_bake(&atlas, &w, &h, NK_FONT_ATLAS_RGBA32);
     device_upload_atlas(image, w, h);
     nk_font_atlas_end(&atlas, nk_handle_id((int)device.font_tex), &device.tex_null);

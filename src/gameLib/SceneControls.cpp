@@ -51,6 +51,22 @@ void SceneControls::init(bool* keys, bool* mouseButtons){
 
     MinecraftInventoryItem* testItem7 = new MinecraftInventoryItem(ItemType::getTypeById("apple"));
 
+    MinecraftInventoryItem* testItem8 = new MinecraftInventoryItem(ItemType::getTypeById("furnace"));
+
+    MinecraftInventoryItem* testItem9 = new MinecraftInventoryItem(ItemType::getTypeById("crafting_table"));
+
+    MinecraftInventoryItem* testItem10 = new MinecraftInventoryItem(ItemType::getTypeById("gold_ore"));
+    MinecraftInventoryItem* testItem11 = new MinecraftInventoryItem(ItemType::getTypeById("iron_ore"));
+    MinecraftInventoryItem* testItem12 = new MinecraftInventoryItem(ItemType::getTypeById("charcoal"));
+
+     MinecraftInventoryItem* testItem13 = new MinecraftInventoryItem(ItemType::getTypeById("potato"));
+
+
+    testItem10->setCount(16);
+    testItem11->setCount(32);
+    testItem12->setCount(32);
+    testItem13->setCount(16);
+
 
     ((InventoryUI*)inventory)->setInventoryItem(testItem, 5);
     ((InventoryUI*)inventory)->setInventoryItem(testItem1, 7);
@@ -60,6 +76,14 @@ void SceneControls::init(bool* keys, bool* mouseButtons){
     ((InventoryUI*)inventory)->setInventoryItem(testItem5, 31);
     ((InventoryUI*)inventory)->setInventoryItem(testItem6, 32);
     ((InventoryUI*)inventory)->setInventoryItem(testItem7, 33);
+    ((InventoryUI*)inventory)->setInventoryItem(testItem8, 21);
+    ((InventoryUI*)inventory)->setInventoryItem(testItem9, 22);
+    ((InventoryUI*)inventory)->setInventoryItem(testItem10, 10);
+    ((InventoryUI*)inventory)->setInventoryItem(testItem11, 11);
+    ((InventoryUI*)inventory)->setInventoryItem(testItem12, 12);
+    ((InventoryUI*)inventory)->setInventoryItem(testItem13, 13);
+
+
 
     activeUI = inventory;
     this->gameUIs.push_back(inventory);
@@ -102,23 +126,23 @@ void SceneControls::render(){
         
             
             for(int i = 0; i < gameUIs.size(); i++){
-                if(isInventoryOpen || i > 0){
+                // if(isInventoryOpen || i > 0){
                     gameUIs[i]->render();
-                }
+                // }
             }
         
         
         
-        if(isInventoryOpen){
+        if(Character::instance->isInventoryUIOpen){
             glfwSetInputMode(Window::window, GLFW_CURSOR , GLFW_CURSOR_NORMAL);
         }else{
             glfwSetInputMode(Window::window, GLFW_CURSOR , GLFW_CURSOR_DISABLED);
         }
 
         for(int i = 0; i < gameUIs.size(); i++){
-            if(isInventoryOpen || i > 0){
+            // if(isInventoryOpen || i > 0){
                 gameUIs[i]->device_draw(WIDTH, HEIGHT, NK_ANTI_ALIASING_ON);
-            }
+            // }
         }
         
             
@@ -136,11 +160,11 @@ glm::mat4 SceneControls::getViewMatrix(){
 }
 
 void SceneControls::onKeys(int key, int code, int action, int mode){
-    if(action == GLFW_PRESS){
-        if(key == GLFW_KEY_E){
-            isInventoryOpen = !isInventoryOpen;
-        }
-    }
+    // if(action == GLFW_PRESS){
+    //     if(key == GLFW_KEY_E){
+    //         isInventoryOpen = !isInventoryOpen;
+    //     }
+    // }
 
 }
 

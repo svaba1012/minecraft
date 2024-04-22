@@ -11,9 +11,18 @@
 
 using namespace std;
 
+enum UI_SUBTYPE{
+    CHARACTER_UI_SUBTYPE,
+    CRAFTING_UI_SUBTYPE,
+    COOKING_UI_SUBTYPE,
+    CHEST_UI_SUBTYPE
+};
+
 class Inventory;
 
 class Item;
+
+class Block;
 
 class Character: public GameObject{
     
@@ -27,13 +36,19 @@ public:
 
     bool isControllable = true;
 
-    void toogleControls();
+    bool isInventoryUIOpen = false;
+    int inventoryUISubtype = CHARACTER_UI_SUBTYPE;
+
+    void openUI();
+    void openUI(int type);
 
     float getArmor();
 
     Inventory* inventory;
     Inventory* protectionInventory;
     int selectedItemId = 0;
+
+    Block* accessedBlock = NULL;
 
     Character(Scene *scene);
     void toogleOutline();

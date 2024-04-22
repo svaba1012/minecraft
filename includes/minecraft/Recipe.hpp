@@ -19,6 +19,7 @@ class Recipe{
     private:
     static RecipeBranch* rootRecipeBranch;
     static RecipeBranch* rootRecipeBranchShapeless;
+    static map<ItemType*, ItemType*> smeltRecipeMap;
 
     static ItemType* craftItemShapeless(vector<ItemType*> in);
 

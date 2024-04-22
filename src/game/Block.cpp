@@ -39,6 +39,85 @@ void Block::setType(string variant){
     this->type->loadData();
 }
 
+//? MAYBE UNNECESSERY
+// void Block::initState(){
+//     if(this->type->stateType & BLOCK_STATE_ITEM_CONTENT){
+
+//     }else if(this->type->stateType & BLOCK_STATE_FURNACE_STATE){
+        
+//     }
+// }
+
+
+
+void Block::updateState(double deltaTime){
+    if(!hasState()){
+        return;
+    }
+    // printf("State is changing\n");
+    if(this->type->stateType & BLOCK_STATE_FURNACE_STATE){
+        // printf("Furnace state is changing");
+        bool isSmelting = fuelItem != NULL || fuelTimeLeft >= 0.0;
+        fuelTimeLeft -= deltaTime;
+        if(isSmelting && fuelTimeLeft <= 0.0 ){
+            isSmelting = false;
+            if(fuelItem == NULL){
+                
+                //! BLOCK SEGMENTATION FAULT IN LATER ELSE IF BLOCK     
+            }else if(fuelItem->getCount() <= 1){
+                maxFuelTime = ((MinecraftInventoryItem*)fuelItem)->itemType->fuel_duration;
+                fuelTimeLeft = maxFuelTime;
+                delete fuelItem;
+                fuelItem = NULL;
+            }else{
+                //! reset fuelTimer
+                maxFuelTime = ((MinecraftInventoryItem*)fuelItem)->itemType->fuel_duration;
+                fuelTimeLeft = maxFuelTime;
+                fuelItem->setCount(fuelItem->getCount() - 1);
+            }
+        }
+        if(isSmelting && smeltResult != NULL){
+            smeltTimeLeft -= deltaTime;
+            canItSmelt = smeltResult != NULL && (
+                smeltedItem == NULL || (
+                    ((MinecraftInventoryItem*)smeltedItem)->itemType == smeltResult && smeltedItem->getSpaceLeft() > 0)); 
+            if(canItSmelt && smeltTimeLeft <= 0.0){
+                //!use recipe for cooking
+                cout << "SMELT RESULT :" << smeltResult->id << endl;
+                
+                if(canItSmelt){
+                    if(hasSomethingSmelting){
+                        if(smeltedItem == NULL){
+                            smeltedItem = new MinecraftInventoryItem(smeltResult);
+                        }else{
+                            smeltedItem->setCount(smeltedItem->getCount() + 1);
+                        }
+                    }
+                    if(cookItem == NULL){
+                        hasSomethingSmelting = false;
+                        smeltResult = NULL;
+                    }else if(cookItem->getCount() <= 0){
+                        delete cookItem;
+                        cookItem = NULL;
+                        hasSomethingSmelting = false;
+                        smeltResult = NULL;
+                    }else{
+                        hasSomethingSmelting = true;
+                        //! reset cookTimer
+                        smeltTimeLeft = 10.0;
+                        cookItem->setCount(cookItem->getCount() - 1);
+                    }
+                }
+            }
+        }
+    }
+    
+}
+
+bool Block::hasState(){
+    return this->type->stateType != 0;
+}
+
 void Block::onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime){
 
     if(type == 0){ //hit
@@ -70,6 +149,11 @@ void Block::onInteracted(GameObject* interactedBy, int type, GLfloat deltaTime){
             int selectedItemId = Character::instance->selectedItemId;
             MinecraftInventoryItem* itemInteractingWith = (MinecraftInventoryItem*)Character::instance->inventory->itemSlots[selectedItemId];
             if(itemInteractingWith == NULL){
+                //check if block is ACCESSIBLE by CHARACTER...
+                if(this->type->accessBlock == NULL){
+                    return;
+                }
+                this->type->accessBlock(this);
                 return;
             }
 
@@ -221,6 +305,7 @@ void Block::render(GLuint uniformModel, GLfloat deltaTime){
         // (*this->meshList)[i]->setOverlayTexture(Block::destroyStatesTextures[0]);
     }
     update();
+    updateState(deltaTime);
     glm::mat4 model = glm::mat4(1);
     // model = glm::translate(model, glm::vec3(-0.5, -0.5, -0.5));
     model = glm::translate(model, this->pos);

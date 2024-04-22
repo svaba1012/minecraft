@@ -3,11 +3,27 @@
 #include <fstream>
 #include <map>
 #include "graphics/Texture.hpp"
+#include "game/Character.hpp"
+
 
 #define TEXTURE_NUM_PER_BLOCK 3
 
 using json = nlohmann::json;
 using namespace std;
+
+#define BLOCK_STATE_ITEM_CONTENT 0x01
+#define BLOCK_STATE_FURNACE_STATE 0x02
+
+//!FOR FUTURE USAGE
+#define BLOCK_STATE1 0x04
+#define BLOCK_STATE2 0x08
+#define BLOCK_STATE3 0x10
+#define BLOCK_STATE4 0x20
+#define BLOCK_STATE5 0x40
+#define BLOCK_STATE6 0x80
+
+// class Character;
+class Block;
 
 class BlockType{
 private:
@@ -28,7 +44,10 @@ public:
     map<string, int> variantMap;
     string* variants;
     int variantNum;
+    int id;
 
+    int stateType = 0;
+    
     float hardness;
 
     bool needsStoneTool;
@@ -40,6 +59,7 @@ public:
     bool mineableWithHoe;
     bool mineableWithShovel;
 
+    void (*accessBlock)(Block* block);
 
 
     static void init();

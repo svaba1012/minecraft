@@ -21,8 +21,16 @@ Character::Character(Scene *scene):GameObject(scene){
 Character::~Character(){
 }
 
-void Character::toogleControls(){
+void Character::openUI(){
     isControllable = !isControllable;
+    isInventoryUIOpen = !isControllable;
+    inventoryUISubtype = CHARACTER_UI_SUBTYPE;
+}
+
+void Character::openUI(int type){
+    inventoryUISubtype = type;
+    isControllable = false;
+    isInventoryUIOpen = true;
 }
 
 // enum ARMOR_TYPES = {ARMOR_TYPE_HELMET, ARMOR_TYPE_CHESTPLATE, ARMOR_TYPE_LEGGINS, ARMOR_TYPE_BOOTS};
@@ -138,7 +146,7 @@ void Character::generateMeshes(){
 void Character::onKeys(int key, int code, int action, int mode){
     if(action == GLFW_PRESS){
         if(key == GLFW_KEY_E){
-            toogleControls();
+            openUI();
         }else if(key == GLFW_KEY_1){
             this->selectedItemId = 0;
         }else if(key == GLFW_KEY_2){

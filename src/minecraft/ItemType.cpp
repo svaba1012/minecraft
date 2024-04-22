@@ -123,12 +123,13 @@ void ItemType::loadData(){
     }
     tempJson = this->itemData.at("fuel_duration");
     this->fuel_duration = 0.0;
-    if(tempJson.is_string() && ((string)tempJson).compare("None") != 0){
+    if(!tempJson.is_string()){
         this->fuel_duration = (float) tempJson;
     }
+    
     tempJson = this->itemData.at("cooldown");
     this->cooldown = 0.0;
-    if(tempJson.is_string() && ((string)tempJson).compare("No") != 0){
+    if(!tempJson.is_string()){
         this->cooldown = (float) tempJson;
     }
 
@@ -159,23 +160,23 @@ void ItemType::loadData(){
     // With Blast Furnace
     // With Smoker
     string smeltableStr = (string) this->itemData.at("smeltable");
-    if(smeltableStr.compare("No")){
+    if(smeltableStr.compare("No") == 0){
         this->smeltable = NO;
-    }else if(smeltableStr.compare("With Furnace Only")){
+    }else if(smeltableStr.compare("With Furnace Only") == 0){
         this->smeltable = SMELTABLE_WITH_FURNACE;
-    }else if(smeltableStr.compare("With Blast Furnace")){
+    }else if(smeltableStr.compare("With Blast Furnace") == 0){
         this->smeltable = SMELTABLE_WITH_BLAST_FURNACE;
-    }else if(smeltableStr.compare("With Smoker")){
+    }else if(smeltableStr.compare("With Smoker") == 0){
         this->smeltable = SMELTABLE_WITH_SMOKER;
     }
     smeltableStr = (string) this->itemData.at("obtainable_by_smelting");
-    if(smeltableStr.compare("No")){
+    if(smeltableStr.compare("No") == 0){
         this->obtainable_by_smelting = NO;
-    }else if(smeltableStr.compare("With Furnace Only")){
+    }else if(smeltableStr.compare("With Furnace Only") == 0){
         this->obtainable_by_smelting = SMELTABLE_WITH_FURNACE;
-    }else if(smeltableStr.compare("With Blast Furnace")){
+    }else if(smeltableStr.compare("With Blast Furnace") == 0){
         this->obtainable_by_smelting = SMELTABLE_WITH_BLAST_FURNACE;
-    }else if(smeltableStr.compare("With Smoker")){
+    }else if(smeltableStr.compare("With Smoker") == 0){
         this->obtainable_by_smelting = SMELTABLE_WITH_SMOKER;
     }
 
@@ -223,7 +224,9 @@ void ItemType::loadData(){
         if (this->isBlock){
             std::ifstream f1("./assets/extern_minecraft_assets/assets/minecraft/models/block/" + this->id + ".json");
             if(f1.fail()){
-                printf("Unsupported texture, fix later\n");
+                //!It is block that is not shape of a square 
+                // printf("Unsupported texture, fix later \n");
+                // cout<<"For item: " << this->id <<endl;
                 return;
             }
             itemModel = json::parse(f1);
@@ -246,17 +249,29 @@ void ItemType::loadData(){
             itemTexture = makeTexture((string)itemTexturesJSON.at("side"));
             itemTexture->loadTexture();
             this->textureList[1] = itemTexture;
-        }else if(itemTexturesJSON.contains("top") && itemTexturesJSON.contains("side") && itemTexturesJSON.contains("bottom")){
+        }else if(itemTexturesJSON.contains("top") && itemTexturesJSON.contains("side")){
             itemTexture = makeTexture((string)itemTexturesJSON.at("top"));
             itemTexture->loadTexture();
             this->textureList[0] = itemTexture;
             itemTexture = makeTexture((string)itemTexturesJSON.at("side"));
             itemTexture->loadTexture();
             this->textureList[1] = itemTexture;
-            itemTexture = makeTexture((string)itemTexturesJSON.at("bottom"));
+            string tempStr = "top";
+            if(itemTexturesJSON.contains("bottom")){
+                tempStr = "bottom";
+            }
+            itemTexture = makeTexture((string)itemTexturesJSON.at(tempStr));
             itemTexture->loadTexture();
             this->textureList[2] = itemTexture;
-        }    
+        }else if(itemTexturesJSON.contains("up") && itemTexturesJSON.contains("west")){
+            itemTexture = makeTexture((string)itemTexturesJSON.at("up"));
+            itemTexture->loadTexture();
+            this->textureList[0] = itemTexture;
+            this->textureList[2] = itemTexture;
+            itemTexture = makeTexture((string)itemTexturesJSON.at("west"));
+            itemTexture->loadTexture();
+            this->textureList[1] = itemTexture;
+        } 
             
         }
         

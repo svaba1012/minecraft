@@ -12,10 +12,10 @@ using namespace std;
 vector<InventoryItem*> craftingItemSlots;
 InventoryItem* craftingResultItem;
 
+InventoryItem* cookingItem;
+InventoryItem* cookingResultItem;
+InventoryItem* cookingFuelItem;
 
-
-
-    
 
 InventoryUI::InventoryUI(Inventory* inv, int numOfCols){
     this->inventory = inv;
@@ -124,8 +124,15 @@ struct nk_image icon_load(const char *filename){
 void inventory_box( struct nk_context *ctx, struct nk_image image, int count){
     // struct nk_context *ctx = &context;
     // const int INVENTORY_ITEM_SIZE = 50;
+
+    struct nk_style *s = &ctx->style;
+    nk_style_push_color(ctx, &s->window.background, nk_rgba(145,145,145, 255));
+    nk_style_push_style_item(ctx, &s->window.fixed_background, nk_style_item_color(nk_rgba(145,145,145, 255)));
+
     struct nk_style_window old_style = ctx->style.window;
     ctx->style.window.group_padding = nk_vec2(0,0);
+    ctx->style.text.color = nk_rgba(255, 255, 255, 255);
+    
     float rowWidths[2] = {40, 20};
     if (nk_group_begin(ctx, "Group", NK_WINDOW_BORDER | NK_WINDOW_NO_SCROLLBAR)) {
         // nk_layout_row_dynamic(ctx, 50, 2);
@@ -143,19 +150,26 @@ void inventory_box( struct nk_context *ctx, struct nk_image image, int count){
             nk_group_end(ctx);
         }
         if(count > 1){
-            nk_layout_space_push(ctx, nk_rect(30,30,15,15));
+            struct nk_style *s = &ctx->style;
+            nk_style_push_color(ctx, &s->window.background, nk_rgba(0,0,0,0));
+            nk_style_push_style_item(ctx, &s->window.fixed_background, nk_style_item_color(nk_rgba(0,0,0,0)));
+            nk_layout_space_push(ctx, nk_rect(28,28,20,20));
             if (nk_group_begin(ctx, "GroupCount",  NK_WINDOW_NO_SCROLLBAR)) {
-                nk_layout_row_static(ctx, 15, 15, 1);
+                nk_layout_row_static(ctx, 20, 20, 1);
                 
                     char countStr[10];
                     sprintf(countStr, "%d", count);
                     nk_label(ctx, countStr, NK_TEXT_RIGHT);
+                    nk_style_pop_color(ctx);
+                    nk_style_pop_style_item(ctx);
                 nk_group_end(ctx);
             }
         }
         nk_layout_space_end(ctx);
         ctx->style.window.group_padding = nk_vec2(0,0);
         // nk_image(ctx, image);
+        nk_style_pop_color(ctx);
+        nk_style_pop_style_item(ctx);
         
         nk_group_end(ctx);
     }
@@ -307,7 +321,7 @@ void InventoryUI::drawChestInventoryUI(struct nk_context* ctx){
 
 void InventoryUI::drawCraftingTableUI(struct nk_context* ctx){
 
-    float rowWidths[4] = {2.5, 3.2, 1, 1};
+    float rowWidths[4] = {2.5, 3.2, 1.5, 1};
     for(int i = 0; i < 4; i++){
         rowWidths[i] *= INVENTORY_ITEM_SIZE;
     }
@@ -352,7 +366,7 @@ void InventoryUI::drawCraftingTableUI(struct nk_context* ctx){
         if (nk_group_begin(ctx, "Group", NK_WINDOW_NO_SCROLLBAR)) {
             nk_group_end(ctx);
         }
-        nk_layout_row_static(ctx, INVENTORY_ITEM_SIZE, INVENTORY_ITEM_SIZE, 1);
+        nk_layout_row_static(ctx, INVENTORY_ITEM_SIZE, 1.5 * INVENTORY_ITEM_SIZE, 1);
         image = icon_load("./assets/custom_minecraft/right_arrow.png");
         nk_image(ctx, image);
         
@@ -395,7 +409,176 @@ void InventoryUI::drawCraftingTableUI(struct nk_context* ctx){
 }
 
 void InventoryUI::drawFurnaceUI(struct nk_context* ctx){
+    Block* furnace = Character::instance->accessedBlock;
 
+    float rowWidths[4] = {3.0, 1, 1.5, 1};
+    for(int i = 0; i < 4; i++){
+        rowWidths[i] *= INVENTORY_ITEM_SIZE;
+    }
+
+    nk_layout_row(ctx, NK_STATIC, 4.7 * INVENTORY_ITEM_SIZE, 4, rowWidths);
+     struct nk_image image;
+    struct nk_style_window old_style = ctx->style.window;
+    ctx->style.window.group_padding = nk_vec2(0, 0);
+    if (nk_group_begin(ctx, "Group", NK_WINDOW_NO_SCROLLBAR)) {
+        nk_group_end(ctx);
+    }
+    if (nk_group_begin(ctx, "Group", NK_WINDOW_NO_SCROLLBAR)) {
+        nk_layout_row_dynamic(ctx, INVENTORY_ITEM_SIZE * 0.3, 1);
+        nk_label(ctx, "Furnace", NK_TEXT_LEFT);
+        nk_layout_row_static(ctx, INVENTORY_ITEM_SIZE, INVENTORY_ITEM_SIZE, 1);
+        int itemCount = -1;
+        if(furnace->cookItem != NULL){
+            image = icon_load(furnace->cookItem->getItemIconFilePath());
+            itemCount = furnace->cookItem->getCount();
+        }
+
+        if(nk_widget_is_mouse_clicked(ctx, NK_BUTTON_LEFT)){
+            printf("Kuvanje\n");
+            if( selectedItem == NULL || ((MinecraftInventoryItem*)selectedItem)->itemType->smeltable == SMELTABLE_WITH_FURNACE || ((MinecraftInventoryItem*)selectedItem)->itemType->smeltable == SMELTABLE_WITH_BLAST_FURNACE){
+                this->itemBoxOnMouseLeftClick(&furnace->cookItem);
+                if(furnace->cookItem != NULL){
+                    printf("IDE RECEPT\n");
+                    furnace->smeltResult = Recipe::smeltItem(((MinecraftInventoryItem*)furnace->cookItem)->itemType);
+                }
+            }
+            //!SEARCH COOKING RECIPES
+            //searchRecipes();    
+        }
+
+        if(nk_widget_is_mouse_clicked(ctx, NK_BUTTON_RIGHT)){
+            if(selectedItem == NULL || ((MinecraftInventoryItem*)selectedItem)->itemType->smeltable == SMELTABLE_WITH_FURNACE || ((MinecraftInventoryItem*)selectedItem)->itemType->smeltable == SMELTABLE_WITH_BLAST_FURNACE){
+                this->itemBoxOnMouseRightClick(&furnace->cookItem);
+                if(furnace->cookItem != NULL){
+                    printf("IDE RECEPT\n");
+                    furnace->smeltResult = Recipe::smeltItem(((MinecraftInventoryItem*)furnace->cookItem)->itemType);
+                }
+            }
+            //!SEARCH COOKING RECIPES
+            //searchRecipes();
+        }
+        inventory_box(ctx, image, itemCount);
+        
+        struct nk_image imageLit = icon_load("./assets/custom_minecraft/lit.png");
+        struct nk_image imageLitProgress = icon_load("./assets/custom_minecraft/lit_progress1.png");
+        if (nk_group_begin(ctx, "LitGroup",  NK_WINDOW_NO_SCROLLBAR)) {
+            nk_layout_space_begin(ctx, NK_STATIC, INVENTORY_ITEM_SIZE, INT_MAX);
+            nk_layout_space_push(ctx, nk_rect(0,0,INVENTORY_ITEM_SIZE,INVENTORY_ITEM_SIZE));
+            nk_image(ctx, imageLitProgress);
+            nk_layout_space_push(ctx, nk_rect(0,0,INVENTORY_ITEM_SIZE,INVENTORY_ITEM_SIZE* (1.0 - furnace->fuelTimeLeft / furnace->maxFuelTime)));
+            // nk_layout_row_static(ctx, ITEM_SIZE / 2, 21 *  ITEM_SIZE, 1);
+            if (nk_group_begin(ctx, "LitGroupProgress",  NK_WINDOW_NO_SCROLLBAR)) {
+                nk_layout_row_static(ctx, INVENTORY_ITEM_SIZE, INVENTORY_ITEM_SIZE, 1);
+                nk_image(ctx, imageLit);
+                
+                nk_group_end(ctx);
+            }
+            nk_layout_space_end(ctx);
+            nk_group_end(ctx);
+        }
+        // nk_image(ctx, image);
+
+        itemCount = -1;
+        if(furnace->fuelItem != NULL){
+            image = icon_load(furnace->fuelItem->getItemIconFilePath());
+            itemCount = furnace->fuelItem->getCount();
+        }
+
+        if(nk_widget_is_mouse_clicked(ctx, NK_BUTTON_LEFT)){
+            printf("Kuvanje\n");
+            if( selectedItem == NULL || ((MinecraftInventoryItem*)selectedItem)->itemType->fuel_duration > 0.0){
+                this->itemBoxOnMouseLeftClick(&furnace->fuelItem);
+                if(furnace->fuelItem == NULL){
+                    // furnace->fuelTimeLeft = 0.0;
+                    // furnace->smeltTimeLeft = 0.0;
+                    // furnace->smeltResult = NULL;
+                    // furnace->hasSomethingSmelting = false;
+                }
+                //!SEARCH COOKING RECIPES
+            }
+            
+            //searchRecipes();    
+        }
+
+        if(nk_widget_is_mouse_clicked(ctx, NK_BUTTON_RIGHT)){
+            if( selectedItem == NULL || ((MinecraftInventoryItem*)selectedItem)->itemType->fuel_duration > 0.0){
+                this->itemBoxOnMouseRightClick(&furnace->fuelItem);
+                if(furnace->fuelItem == NULL){
+                    // furnace->fuelTimeLeft = 0.0;
+                    // furnace->smeltTimeLeft = 0.0;
+                    // furnace->smeltResult = NULL;
+                    // furnace->hasSomethingSmelting = false;
+                }
+            }
+            //!SEARCH COOKING RECIPES
+            //searchRecipes();
+        }
+        inventory_box(ctx, image, itemCount);
+        // ! recepies button
+        nk_group_end(ctx);
+    }
+
+    if (nk_group_begin(ctx, "Group", NK_WINDOW_NO_SCROLLBAR)) {
+        nk_layout_row_dynamic(ctx, INVENTORY_ITEM_SIZE * 1.35, 1);
+        if (nk_group_begin(ctx, "Group", NK_WINDOW_NO_SCROLLBAR)) {
+            nk_group_end(ctx);
+        }
+        nk_layout_row_static(ctx, INVENTORY_ITEM_SIZE, 1.5 * INVENTORY_ITEM_SIZE, 1);
+        struct nk_image imageArrow = icon_load("./assets/custom_minecraft/right_arrow.png");
+        struct nk_image imageArrowProgress = icon_load("./assets/custom_minecraft/burn_progress.png");
+        if (nk_group_begin(ctx, "SmeltGroup",  NK_WINDOW_NO_SCROLLBAR)) {
+            nk_layout_space_begin(ctx, NK_STATIC, INVENTORY_ITEM_SIZE * 1.5, INT_MAX);
+            nk_layout_space_push(ctx, nk_rect(0,0,INVENTORY_ITEM_SIZE * 1.5,INVENTORY_ITEM_SIZE));
+            nk_image(ctx, imageArrow);
+            nk_layout_space_push(ctx, nk_rect(0,0,INVENTORY_ITEM_SIZE * 1.5 * ( 
+            1.0 - furnace->smeltTimeLeft / 10.0),INVENTORY_ITEM_SIZE));
+            // nk_layout_row_static(ctx, ITEM_SIZE / 2, 21 *  ITEM_SIZE, 1);
+            if (nk_group_begin(ctx, "SmeltGroupProgress",  NK_WINDOW_NO_SCROLLBAR)) {
+                nk_layout_row_static(ctx, INVENTORY_ITEM_SIZE,  INVENTORY_ITEM_SIZE * 1.5, 1);
+                nk_image(ctx, imageArrowProgress);
+                
+                nk_group_end(ctx);
+            }
+            nk_layout_space_end(ctx);
+            nk_group_end(ctx);
+        }
+
+        nk_group_end(ctx);
+    }
+
+    old_style = ctx->style.window;
+
+    ctx->style.window.group_padding = nk_vec2(0, 0);
+    if (nk_group_begin(ctx, "Group", NK_WINDOW_NO_SCROLLBAR)) {
+        nk_layout_row_dynamic(ctx, INVENTORY_ITEM_SIZE * 1.35, 1);
+        if (nk_group_begin(ctx, "Group", NK_WINDOW_NO_SCROLLBAR)) {
+            nk_group_end(ctx);
+        }
+        nk_layout_row_static(ctx, INVENTORY_ITEM_SIZE, INVENTORY_ITEM_SIZE, 1);
+
+        InventoryItem* curItem = furnace->smeltedItem;
+        int itemCount = -1;
+        if(curItem != NULL){
+            image = icon_load(curItem->getItemIconFilePath());
+            itemCount = curItem->getCount();
+        }
+        if(this->selectedItem == NULL){
+            if(nk_widget_is_mouse_clicked(ctx, NK_BUTTON_LEFT)){
+            // ! IMPLEMENT LATER LOGIC FOR RESULT ITEM
+                this->itemBoxOnMouseLeftClick(&furnace->smeltedItem);  
+                //consumeIngredients();  
+            }
+            if(nk_widget_is_mouse_clicked(ctx, NK_BUTTON_RIGHT)){
+                // ! IMPLEMENT LATER LOGIC FOR RESULT ITEM
+                this->itemBoxOnMouseRightClick(&furnace->smeltedItem);
+            }
+        }
+        
+        inventory_box(ctx, image, itemCount);
+        
+        nk_group_end(ctx);
+    }
+    ctx->style.window = old_style;
 }
 
 void InventoryUI::drawCharacterInfo(struct nk_context* ctx){
@@ -555,16 +738,38 @@ void InventoryUI::drawCharacterInfo(struct nk_context* ctx){
 
 
 void InventoryUI::draw(struct nk_context* ctx){
+
+    if(!Character::instance->isInventoryUIOpen){
+        return;
+    }
+    
     // const int INVENTORY_ITEM_SIZE = 50;
     struct nk_image image;
+
+    struct nk_style *s = &ctx->style;
+    nk_style_push_color(ctx, &s->window.background, nk_rgba(198,198,198, 255));
+    nk_style_push_style_item(ctx, &s->window.fixed_background, nk_style_item_color(nk_rgba(198,198,198, 255)));
 
     const int xPos = 130, yPos = 10;
     if (nk_begin(ctx, "Inventory", nk_rect(xPos, yPos, 9.9 * INVENTORY_ITEM_SIZE, 9.6 * INVENTORY_ITEM_SIZE), NK_WINDOW_BORDER | NK_WINDOW_NO_SCROLLBAR)){
         
-        //drawCharacterInfo(ctx);
-        drawCraftingTableUI(ctx);
-        
 
+        switch(Character::instance->inventoryUISubtype){
+            case CHARACTER_UI_SUBTYPE:  
+                drawCharacterInfo(ctx);
+                break;
+            case CRAFTING_UI_SUBTYPE:  
+                drawCraftingTableUI(ctx);
+                break;
+            case COOKING_UI_SUBTYPE:  
+                drawFurnaceUI(ctx);
+                break;   
+            case CHEST_UI_SUBTYPE:
+                drawChestInventoryUI(ctx);
+                break;
+              
+        }
+        
         nk_layout_row_static(ctx, INVENTORY_ITEM_SIZE, INVENTORY_ITEM_SIZE, this->numOfCols);
         for(int i = 9; i < this->inventory->numOfSlots; i++){
             InventoryItem* curItem = this->getInventoryItem(i);
@@ -606,6 +811,8 @@ void InventoryUI::draw(struct nk_context* ctx){
             inventory_box(ctx, image, itemCount);
         }
     }
+    nk_style_pop_color(ctx);
+    nk_style_pop_style_item(ctx);
     nk_end(ctx);
 }
 

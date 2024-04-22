@@ -8,6 +8,22 @@ BlockType* BlockType::types;
 map<string, int> BlockType::nameMap;
 map<string, int> BlockType::variantNameMap;
 
+
+//!mozda ne treba
+// const int SPECIAL_TYPES_ID[10];
+
+
+void accessCraftingTable(Block* block){
+    Character::instance->accessedBlock = block;
+    Character::instance->openUI(CRAFTING_UI_SUBTYPE);
+}
+
+void accessFurnace(Block* block){
+    Character::instance->accessedBlock = block;
+    Character::instance->openUI(COOKING_UI_SUBTYPE);
+}
+
+
 void BlockType::init(){
     std::ifstream f("./assets/custom_minecraft/blocklist.json");
     blocksData = json::parse(f);
@@ -17,9 +33,19 @@ void BlockType::init(){
     for(int i = 0; i < BlockType::typeNum; i++){
         BlockType* curType = &BlockType::types[i];
         curType->blockData = blocksData.at(i);
-        BlockType::nameMap.insert({(string) blocksData.at(i).at("block"), i});
+        string name = (string) blocksData.at(i).at("block");
+        BlockType::nameMap.insert({name, i});
         curType->variantNum = curType->blockData.at("variants").size();
         curType->variants = new string[curType->variantNum];
+        //!mozda ne treba
+        // curType->id = i;
+        if(name.compare("Crafting Table") == 0){
+            curType->accessBlock = accessCraftingTable;
+        }else if(name.compare("Furnace") == 0){
+            curType->accessBlock = accessFurnace;
+        }
+        //...more types
+
 
         if(curType->variantNum == 1){
             string variantName = (string) curType->blockData.at("variants");
@@ -101,6 +127,30 @@ void BlockType::loadData(){
     this->needsIronTool = readJsonBool("tag_needs_iron_tool");
     this->needsDiamondTool = readJsonBool("tag_needs_diamond_tool");
 
+    string blockEntityStr = (string) this->blockData.at("block_entity");
+    if(blockEntityStr.compare("No") != 0){
+        //block type has some sort of state
+        json blockEntityData = this->blockData.at("block_entity_data");
+        vector<string> entytyDataStrList;
+        int entityDataNum = blockEntityData.size();
+        if(entityDataNum == 1){
+            entytyDataStrList.push_back((string) this->blockData.at("block_entity_data"));
+        }else{
+            for(int i = 0; i < entityDataNum; i++){
+                entytyDataStrList.push_back((string) this->blockData.at("block_entity_data").at(i));
+            }
+        }
+        for(int i = 0; i < entityDataNum; i++){
+            // cout << "List entity: " << entytyDataStrList[i] << endl;
+            if(entytyDataStrList[i].compare("Item contents") == 0){
+                // printf("Item content block types found\n");
+                stateType |= BLOCK_STATE_ITEM_CONTENT;
+            }else if(entytyDataStrList[i].compare("-Time until the current item is smelted,\n-The time until the furnace's current fuel item is exhausted,\n-All of the items that have been smelted since a player emptied the output slot") == 0){
+                // printf("Furnaceee state block types found\n");
+                stateType |= BLOCK_STATE_FURNACE_STATE;
+            }
+        }
+    }
 
 
     
@@ -156,16 +206,28 @@ void BlockType::loadData(){
             blockTexture = makeTexture((string)blockTexturesJSON.at("side"));
             blockTexture->loadTexture();
             this->textureList[i * TEXTURE_NUM_PER_BLOCK + 1] = blockTexture;
-        }else if(blockTexturesJSON.contains("top") && blockTexturesJSON.contains("side") && blockTexturesJSON.contains("bottom")){
+        }else if(blockTexturesJSON.contains("top") && blockTexturesJSON.contains("side")){
             blockTexture = makeTexture((string)blockTexturesJSON.at("top"));
             blockTexture->loadTexture();
             this->textureList[i * TEXTURE_NUM_PER_BLOCK] = blockTexture;
             blockTexture = makeTexture((string)blockTexturesJSON.at("side"));
             blockTexture->loadTexture();
             this->textureList[i * TEXTURE_NUM_PER_BLOCK + 1] = blockTexture;
-            blockTexture = makeTexture((string)blockTexturesJSON.at("bottom"));
+            string tempStr = "top";
+            if(blockTexturesJSON.contains("bottom")){
+                tempStr = "bottom";
+            }
+            blockTexture = makeTexture((string)blockTexturesJSON.at(tempStr));
             blockTexture->loadTexture();
             this->textureList[i * TEXTURE_NUM_PER_BLOCK + 2] = blockTexture;
+        }else if(blockTexturesJSON.contains("up") && blockTexturesJSON.contains("west")){
+            blockTexture = makeTexture((string)blockTexturesJSON.at("up"));
+            blockTexture->loadTexture();
+            this->textureList[i * TEXTURE_NUM_PER_BLOCK] = blockTexture;
+            this->textureList[i * TEXTURE_NUM_PER_BLOCK + 2] = blockTexture;
+            blockTexture = makeTexture((string)blockTexturesJSON.at("west"));
+            blockTexture->loadTexture();
+            this->textureList[i * TEXTURE_NUM_PER_BLOCK + 1] = blockTexture;
         }
     }
 }
